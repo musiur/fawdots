@@ -128,8 +128,8 @@ hl.config({
 
         blur = {
             enabled   = true,
-            size      = 3,
-            passes    = 1,
+            size      = 6,
+            passes    = 2,
             vibrancy  = 0.1696,
         },
     },
@@ -357,6 +357,14 @@ hl.window_rule({
 --     match = { namespace = "^my-overlay$" },
 --     no_anim = true,
 -- })
+
+-- Blur hyprpanel's layer surface (macOS-style frosted top bar)
+hl.layer_rule({
+    name  = "blur-hyprpanel",
+    match = { namespace = "^com\\.c0dedbad\\.hyprpanel\\.client$" },
+    blur = true,
+    ignore_alpha = 0.1,
+})
 -- overlayLayerRule:set_enabled(false)
 
 -- Hyprland-run windowrule
