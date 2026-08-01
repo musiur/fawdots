@@ -6,8 +6,8 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 PACMAN_PKGS=(stow hypridle hyprlock pipewire-pulse wireplumber grim slurp wl-clipboard
-	satty hyprshot xdg-user-dirs waybar networkmanager bluez bluez-utils
-	ttf-nerd-fonts-symbols dunst)
+	satty hyprshot xdg-user-dirs waybar networkmanager network-manager-applet bluez
+	bluez-utils blueman pavucontrol ttf-nerd-fonts-symbols dunst)
 AUR_PKGS=()
 
 echo "==> Installing pacman packages: ${PACMAN_PKGS[*]}"
