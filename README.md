@@ -43,9 +43,9 @@ fawdots/
 
 | Key | Action |
 |---|---|
-| `Print` | Full monitor screenshot → saved to `~/Pictures` + clipboard |
+| `Print` | Draw a region → opens in satty to annotate |
 | `SUPER+Print` | Screenshot a window you click on → saved + clipboard |
-| `SUPER+SHIFT+Print` | Draw a region → opens in satty to annotate |
+| `SUPER+SHIFT+Print` | Full monitor screenshot → saved to `~/Pictures` + clipboard |
 
 Annotation uses [satty](https://github.com/gabm/Satty) (not swappy — swappy's
 panel is a fixed side dock with no config to make it a single top toolbar;
