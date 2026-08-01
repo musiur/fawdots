@@ -39,13 +39,13 @@
 	"panels": [
 		{
 			"id": "panel0",
-			"edge": "EDGE_RIGHT",
-			"size": 64,
+			"edge": "EDGE_TOP",
+			"size": 32,
 			"monitor": "",
 			"modules": [
 				{
 					"pager": {
-						"icon_size": 12,
+						"icon_size": 14,
 						"active_monitor_only": false,
 						"scroll_wrap_workspaces": true,
 						"scroll_include_inactive": true,
@@ -65,33 +65,14 @@
 				},
 				{
 					"spacer": {
-						"size": 16,
-						"expand": false
-					}
-				},
-				{
-					"taskbar": {
-						"icon_size": 48,
-						"active_workspace_only": true,
-						"active_monitor_only": true,
-						"group_tasks": true,
-						"hide_indicators": false,
-						"expand": true,
-						"max_size": 0,
-						"pinned": [],
-						"preview_width": 256
-					}
-				},
-				{
-					"spacer": {
-						"size": 16,
-						"expand": false
+						"size": 0,
+						"expand": true
 					}
 				},
 				{
 					"systray": {
-						"icon_size": 22,
-						"menu_icon_size": 22,
+						"icon_size": 16,
+						"menu_icon_size": 16,
 						"auto_hide_statuses": [
 							"STATUS_UNSPECIFIED",
 							"STATUS_PASSIVE",
@@ -105,7 +86,7 @@
 						"modules": [
 							{
 								"power": {
-									"icon_size": 22,
+									"icon_size": 16,
 									"icon_symbolic": true
 								}
 							}
@@ -113,8 +94,14 @@
 					}
 				},
 				{
+					"spacer": {
+						"size": 12,
+						"expand": false
+					}
+				},
+				{
 					"notifications": {
-						"icon_size": 24,
+						"icon_size": 16,
 						"notification_icon_size": 48,
 						"default_timeout": "7s",
 						"position": "POSITION_TOP_RIGHT",
@@ -132,13 +119,13 @@
 				},
 				{
 					"spacer": {
-						"size": 16,
+						"size": 12,
 						"expand": false
 					}
 				},
 				{
 					"audio": {
-						"icon_size": 32,
+						"icon_size": 18,
 						"icon_symbolic": true,
 						"command_mixer": "pavucontrol",
 						"enable_source": true
@@ -146,7 +133,7 @@
 				},
 				{
 					"spacer": {
-						"size": 16,
+						"size": 12,
 						"expand": false
 					}
 				},
@@ -166,13 +153,13 @@
 				},
 				{
 					"spacer": {
-						"size": 16,
+						"size": 12,
 						"expand": false
 					}
 				},
 				{
 					"session": {
-						"icon_size": 48,
+						"icon_size": 18,
 						"icon_symbolic": true,
 						"overlay_icon_size": 96,
 						"overlay_icon_symbolic": true,
@@ -184,7 +171,7 @@
 				},
 				{
 					"spacer": {
-						"size": 16,
+						"size": 8,
 						"expand": false
 					}
 				}

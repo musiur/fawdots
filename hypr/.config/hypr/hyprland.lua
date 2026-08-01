@@ -50,7 +50,9 @@ local menu        = "hyprlauncher"
 hl.on("hyprland.start", function ()
     hl.exec_cmd("hyprpaper")
     hl.exec_cmd("hypridle")
-    hl.exec_cmd("hyprpanel")
+    -- Small delay: hyprpanel crash-loops and gives up if pipewire-pulse/wireplumber
+    -- haven't finished activating yet on a fresh boot.
+    hl.exec_cmd("sleep 2 && hyprpanel")
 end)
 
 
