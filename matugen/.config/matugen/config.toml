@@ -11,3 +11,20 @@ post_hook = "pkill -x waybar; sleep 0.3; (waybar &disown) &"
 [templates.hyprlock]
 input_path = "~/.config/matugen/templates/hyprlock.conf"
 output_path = "~/.config/hypr/hyprlock.conf"
+
+[templates.hyprland]
+input_path = "~/.config/matugen/templates/hyprland-colors.lua"
+output_path = "~/.config/hypr/colors.lua"
+post_hook = "hyprctl reload"
+
+[templates.kitty]
+input_path = "~/.config/matugen/templates/kitty-colors.conf"
+output_path = "~/.config/kitty/colors.conf"
+
+[templates.gtk3]
+input_path = "~/.config/matugen/templates/gtk3-colors.css"
+output_path = "~/.config/gtk-3.0/gtk.css"
+
+[templates.gtk4]
+input_path = "~/.config/matugen/templates/gtk4-colors.css"
+output_path = "~/.config/gtk-4.0/gtk.css"

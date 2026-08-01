@@ -14,6 +14,9 @@ fawdots/
   waybar/.config/waybar/   waybar status bar (config.jsonc, style.css)
   matugen/.config/matugen/ Wallpaper → color scheme pipeline (config.toml, templates/)
   waypaper/.config/waypaper/ GUI wallpaper picker config
+  kitty/.config/kitty/     Terminal (kitty.conf includes matugen-generated colors.conf)
+  gtk-3.0/.config/gtk-3.0/ Dark mode preference (colors come from matugen)
+  gtk-4.0/.config/gtk-4.0/ Dark mode preference (colors come from matugen)
   install.sh                Bootstrap script for a fresh machine
 ```
 
@@ -81,7 +84,7 @@ none are bundled). Picking a wallpaper:
 2. Runs `matugen image "$wallpaper" ...` as a post-command (configured in
    `waypaper/.config/waypaper/config.ini`), which extracts a Material You
    color palette from the image.
-3. matugen regenerates two files from templates in
+3. matugen regenerates several files from templates in
    `matugen/.config/matugen/templates/`:
    - `~/.config/waybar/colors.css` — `@define-color` values that
      `waybar/style.css` imports (`@import url("colors.css");`) and uses via
@@ -90,12 +93,26 @@ none are bundled). Picking a wallpaper:
      path + accent colors, regenerated fresh each time (not a partial
      patch — hyprlock has no `source =` dependency we wanted to risk
      leaving unverified, so the template owns the whole file).
+   - `~/.config/hypr/colors.lua` — `hyprland.lua` does
+     `local colors = require("colors")` and uses `colors.active_border` /
+     `colors.inactive_border` for window border colors. `post_hook` runs
+     `hyprctl reload`.
+   - `~/.config/kitty/colors.conf` — 16-color ANSI palette derived from
+     matugen's base16 output (base16-shell's standard mapping, e.g.
+     `color1`/red = `base08`). `kitty/kitty.conf` does `include colors.conf`.
+     Picked up on kitty's next launch (no live-reload hook).
+   - `~/.config/gtk-3.0/gtk.css` and `~/.config/gtk-4.0/gtk.css` —
+     `@define-color` overrides for Adwaita's/libadwaita's named colors
+     (`theme_selected_bg_color`, `accent_color`, etc.), which GTK apps load
+     automatically. This is what themes pavucontrol, blueman-manager,
+     nm-connection-editor, and other GTK apps. `gtk-3.0`/`gtk-4.0` packages
+     also carry a static (non-generated) `settings.ini` forcing dark mode.
 
-Both generated files are **not** stow-tracked (they're build artifacts, not
+Generated files are **not** stow-tracked (they're build artifacts, not
 source) — only the templates that produce them are in the repo. On a fresh
 machine, `install.sh` runs matugen once against the built-in
-`/usr/share/hypr/wall2.png` so waybar/hyprlock have colors before you've
-picked a real wallpaper.
+`/usr/share/hypr/wall2.png` so every target has colors before you've picked
+a real wallpaper.
 
 `--prefer saturation` is passed to matugen to avoid an interactive terminal
 prompt when an image has multiple equally-dominant colors (no TTY is

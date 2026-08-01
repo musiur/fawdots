@@ -7,7 +7,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 PACMAN_PKGS=(stow hypridle hyprlock pipewire-pulse wireplumber grim slurp wl-clipboard
 	satty hyprshot xdg-user-dirs waybar networkmanager network-manager-applet bluez
-	bluez-utils blueman pavucontrol ttf-nerd-fonts-symbols dunst matugen)
+	bluez-utils blueman pavucontrol ttf-nerd-fonts-symbols dunst matugen kitty adwaita-fonts)
 AUR_PKGS=(waypaper)
 
 echo "==> Installing pacman packages: ${PACMAN_PKGS[*]}"
