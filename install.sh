@@ -5,7 +5,7 @@ set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-PACMAN_PKGS=(stow hypridle hyprlock pipewire-pulse wireplumber grim slurp wl-clipboard swappy hyprshot xdg-user-dirs)
+PACMAN_PKGS=(stow hypridle hyprlock pipewire-pulse wireplumber grim slurp wl-clipboard satty hyprshot xdg-user-dirs)
 AUR_PKGS=(hyprpanel)
 
 echo "==> Installing pacman packages: ${PACMAN_PKGS[*]}"

@@ -313,7 +313,7 @@ hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = tr
 -- Screenshots (grim + slurp via hyprshot), saved to ~/Pictures and copied to clipboard
 hl.bind("Print",                  hl.dsp.exec_cmd("hyprshot -m output -m active"))
 hl.bind(mainMod .. " + Print",    hl.dsp.exec_cmd("hyprshot -m window"))
-hl.bind(mainMod .. " + SHIFT + Print", hl.dsp.exec_cmd("hyprshot -m region --raw | swappy -f -"))
+hl.bind(mainMod .. " + SHIFT + Print", hl.dsp.exec_cmd("hyprshot -m region --raw | satty -f - --output-filename ~/Pictures/satty-%Y%m%d-%H%M%S.png --copy-command wl-copy"))
 
 
 --------------------------------
