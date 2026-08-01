@@ -12,6 +12,7 @@ symlinks a package's files into place without copying them, so edits in
 fawdots/
   hypr/.config/hypr/       Hyprland (hyprland.lua, hyprpaper.conf, hypridle.conf, hyprlock.conf)
   hyprpanel/.config/hyprpanel/   hyprpanel status bar/panel config
+  swappy/.config/swappy/    swappy (screenshot annotation) config
   install.sh                Bootstrap script for a fresh machine
 ```
 
@@ -38,6 +39,21 @@ fawdots/
 
 `hyprpaper`, `hypridle`, and `hyprpanel` are autostarted from `hyprland.lua`.
 `SUPER+L` locks the session via `hyprlock`.
+
+## Screenshots
+
+| Key | Action |
+|---|---|
+| `Print` | Full monitor screenshot → saved to `~/Pictures` + clipboard |
+| `SUPER+Print` | Screenshot a window you click on → saved + clipboard |
+| `SUPER+SHIFT+Print` | Draw a region → opens in swappy to annotate |
+
+swappy has no crop tool — select a smaller region with slurp instead. Its
+annotation panel (brush/shapes/colors) is hidden by default upstream; this
+repo's `swappy/.config/swappy/config` sets `show_panel=true` so it's visible
+on open. Toggle it anytime with `Ctrl+B`. Other useful swappy keys: `b`
+brush, `r` rectangle, `c` ellipse, `a` arrow, `d` blur, `R`/`G`/`B`/`C` colors,
+`Ctrl+S` save, `Ctrl+C` copy, `Ctrl+Z` undo.
 
 ## Usage on a new machine
 

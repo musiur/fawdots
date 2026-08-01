@@ -311,7 +311,7 @@ hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = tr
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
 -- Screenshots (grim + slurp via hyprshot), saved to ~/Pictures and copied to clipboard
-hl.bind("Print",                  hl.dsp.exec_cmd("hyprshot -m output"))
+hl.bind("Print",                  hl.dsp.exec_cmd("hyprshot -m output -m active"))
 hl.bind(mainMod .. " + Print",    hl.dsp.exec_cmd("hyprshot -m window"))
 hl.bind(mainMod .. " + SHIFT + Print", hl.dsp.exec_cmd("hyprshot -m region --raw | swappy -f -"))
 
