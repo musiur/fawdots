@@ -24,3 +24,17 @@ mode="dark"
 [ -f "$MODE_FILE" ] && mode="$(cat "$MODE_FILE")"
 
 matugen image "$wallpaper" --config "$HOME/.config/matugen/config.toml" --prefer saturation --mode "$mode"
+
+# Stock GTK3 Adwaita's dark-mode support is largely unmaintained now that
+# libadwaita/GTK4 owns dark theming — gtk-application-prefer-dark-theme
+# alone doesn't reliably darken GTK3 apps (pavucontrol, blueman-manager,
+# nm-connection-editor). adw-gtk3(-dark) is the standard replacement theme
+# that actually respects it. matugen's template engine has no conditionals,
+# so the theme name is picked here instead of in the template.
+if [ "$mode" = "dark" ]; then
+	gtk3_theme="adw-gtk3-dark"
+else
+	gtk3_theme="adw-gtk3"
+fi
+sed -i "s/^gtk-theme=.*/gtk-theme=$gtk3_theme/" "$HOME/.config/gtk-3.0/settings.ini"
+command -v gsettings >/dev/null 2>&1 && gsettings set org.gnome.desktop.interface gtk-theme "$gtk3_theme" 2>/dev/null || true

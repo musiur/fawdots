@@ -124,10 +124,27 @@ matugen regenerates these files from templates in
   automatically. This is what themes pavucontrol, blueman-manager,
   nm-connection-editor, and other GTK apps.
 - `~/.config/gtk-3.0/settings.ini` and `~/.config/gtk-4.0/settings.ini` —
-  just `gtk-application-prefer-dark-theme={{is_dark_mode}}`. These used to
-  be static stow-tracked files; they're matugen templates now so the
-  toggle actually flips them (GLib's key-file boolean parser accepts the
-  literal `true`/`false` strings matugen outputs, so no conversion needed).
+  `gtk-application-prefer-dark-theme={{is_dark_mode}}`. These used to be
+  static stow-tracked files; they're matugen templates now so the toggle
+  actually flips them (GLib's key-file boolean parser accepts the literal
+  `true`/`false` strings matugen outputs, so no conversion needed).
+
+  GTK3's stock Adwaita theme does **not** reliably darken from this flag
+  alone anymore — dark-mode maintenance effectively moved to
+  libadwaita/GTK4, and plain "Adwaita" for GTK3 is legacy at this point
+  (confirmed by actually launching pavucontrol and screenshotting it: it
+  stayed white with only the boolean set). The fix is
+  [adw-gtk-theme](https://github.com/lassekongo83/adw-gtk3) (official
+  repo), a GTK3 port of libadwaita that ships proper `adw-gtk3` /
+  `adw-gtk3-dark` variants. matugen's template engine has no conditionals
+  (verified — it only does `{{ value | filter }}` pipelines, no `{{if}}`
+  block despite that syntax existing in some template engines), so
+  `matugen-apply` picks the theme name itself after matugen runs: writes
+  `gtk-theme=adw-gtk3(-dark)` into `gtk-3.0/settings.ini` via `sed` and
+  sets the matching `org.gnome.desktop.interface gtk-theme` gsetting.
+  GTK4/libadwaita apps don't have this problem — they only ever have one
+  visual theme and switch its light/dark rendering internally based on
+  the prefer-dark-theme/color-scheme signal, which already worked.
 
 Generated files are **not** stow-tracked (they're build artifacts, not
 source) — only the templates that produce them are in the repo (there's no
