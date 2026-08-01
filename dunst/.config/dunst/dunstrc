@@ -7,3 +7,11 @@
     mouse_left_click = do_action, close_current
     mouse_middle_click = close_all
     mouse_right_click = close_current
+
+# blueman's pairing prompt has two actions (confirm/deny) with no default,
+# so do_action alone falls back to dunst's context menu — which may not be
+# rendering usably here. Pin the action explicitly so left-click confirms
+# directly. Right-click still just dismisses (implicit deny via timeout).
+[bluetooth-pairing]
+    appname = "Bluetooth"
+    action_name = "confirm"
