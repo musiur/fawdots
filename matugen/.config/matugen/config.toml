@@ -1,0 +1,13 @@
+[config]
+# Prevents an interactive terminal prompt when an image has multiple
+# equally-dominant colors and no preference is given.
+fallback_color = "#7f7fff"
+
+[templates.waybar]
+input_path = "~/.config/matugen/templates/waybar-colors.css"
+output_path = "~/.config/waybar/colors.css"
+post_hook = "pkill -x waybar; sleep 0.3; (waybar &disown) &"
+
+[templates.hyprlock]
+input_path = "~/.config/matugen/templates/hyprlock.conf"
+output_path = "~/.config/hypr/hyprlock.conf"

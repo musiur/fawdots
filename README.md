@@ -10,8 +10,10 @@ symlinks a package's files into place without copying them, so edits in
 
 ```
 fawdots/
-  hypr/.config/hypr/       Hyprland (hyprland.lua, hyprpaper.conf, hypridle.conf, hyprlock.conf)
+  hypr/.config/hypr/       Hyprland (hyprland.lua, hyprpaper.conf, hypridle.conf)
   waybar/.config/waybar/   waybar status bar (config.jsonc, style.css)
+  matugen/.config/matugen/ Wallpaper → color scheme pipeline (config.toml, templates/)
+  waypaper/.config/waypaper/ GUI wallpaper picker config
   install.sh                Bootstrap script for a fresh machine
 ```
 
@@ -67,6 +69,37 @@ satty has a compact top toolbar out of the box). satty also has no crop
 tool — select a smaller region with slurp instead. Annotated screenshots
 save to `~/Pictures/satty-<timestamp>.png` and copy to clipboard on demand
 via satty's toolbar/keybinds (see `satty --man` for the full list).
+
+## Theme / wallpaper sync
+
+`SUPER+W` opens [waypaper](https://github.com/anufrievroman/waypaper) (AUR),
+a thumbnail picker over `~/Pictures/Wallpapers` (drop your own images there —
+none are bundled). Picking a wallpaper:
+
+1. Sets it via `hyprctl hyprpaper ...` IPC (waypaper's hyprpaper backend
+   talks to the already-running hyprpaper instance, doesn't edit its config).
+2. Runs `matugen image "$wallpaper" ...` as a post-command (configured in
+   `waypaper/.config/waypaper/config.ini`), which extracts a Material You
+   color palette from the image.
+3. matugen regenerates two files from templates in
+   `matugen/.config/matugen/templates/`:
+   - `~/.config/waybar/colors.css` — `@define-color` values that
+     `waybar/style.css` imports (`@import url("colors.css");`) and uses via
+     `alpha(@background, 0.45)` etc. Restarts waybar via `post_hook`.
+   - `~/.config/hypr/hyprlock.conf` — the *entire* file, background image
+     path + accent colors, regenerated fresh each time (not a partial
+     patch — hyprlock has no `source =` dependency we wanted to risk
+     leaving unverified, so the template owns the whole file).
+
+Both generated files are **not** stow-tracked (they're build artifacts, not
+source) — only the templates that produce them are in the repo. On a fresh
+machine, `install.sh` runs matugen once against the built-in
+`/usr/share/hypr/wall2.png` so waybar/hyprlock have colors before you've
+picked a real wallpaper.
+
+`--prefer saturation` is passed to matugen to avoid an interactive terminal
+prompt when an image has multiple equally-dominant colors (no TTY is
+available when waypaper invokes it as a background process).
 
 ## Usage on a new machine
 

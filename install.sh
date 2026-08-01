@@ -7,8 +7,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 PACMAN_PKGS=(stow hypridle hyprlock pipewire-pulse wireplumber grim slurp wl-clipboard
 	satty hyprshot xdg-user-dirs waybar networkmanager network-manager-applet bluez
-	bluez-utils blueman pavucontrol ttf-nerd-fonts-symbols dunst)
-AUR_PKGS=()
+	bluez-utils blueman pavucontrol ttf-nerd-fonts-symbols dunst matugen)
+AUR_PKGS=(waypaper)
 
 echo "==> Installing pacman packages: ${PACMAN_PKGS[*]}"
 sudo pacman -S --needed "${PACMAN_PKGS[@]}"
@@ -36,5 +36,11 @@ done
 
 echo "==> Setting up XDG user directories (~/Pictures, ~/Downloads, etc.)"
 xdg-user-dirs-update
+mkdir -p ~/Pictures/Wallpapers
+
+echo "==> Generating initial theme colors (waybar/hyprlock have nothing to show until this runs once)"
+matugen image /usr/share/hypr/wall2.png --config ~/.config/matugen/config.toml --prefer saturation
 
 echo "==> Done. Log out/in (or restart Hyprland) to pick up autostart changes."
+echo "    Add wallpapers to ~/Pictures/Wallpapers, then SUPER+W opens waypaper to pick one"
+echo "    (colors auto-sync to waybar/hyprlock on every change)."
