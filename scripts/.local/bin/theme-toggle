@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Toggles between light and dark mode: regenerates theme colors for the
+# current wallpaper via matugen-apply, and syncs the GNOME color-scheme
+# gsettings key (some GTK apps check this instead of, or in addition to,
+# gtk.css @define-color overrides).
+set -euo pipefail
+
+MODE_FILE="$HOME/.local/state/fawdots/theme-mode"
+mkdir -p "$(dirname "$MODE_FILE")"
+
+mode="dark"
+[ -f "$MODE_FILE" ] && mode="$(cat "$MODE_FILE")"
+
+if [ "$mode" = "dark" ]; then
+	new_mode="light"
+else
+	new_mode="dark"
+fi
+
+echo "$new_mode" >"$MODE_FILE"
+
+"$HOME/.local/bin/matugen-apply"
+
+if command -v gsettings >/dev/null 2>&1; then
+	if [ "$new_mode" = "dark" ]; then
+		gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || true
+	else
+		gsettings set org.gnome.desktop.interface color-scheme 'default' 2>/dev/null || true
+	fi
+fi
+
+command -v notify-send >/dev/null 2>&1 && notify-send "Theme" "Switched to $new_mode mode"
+exit 0

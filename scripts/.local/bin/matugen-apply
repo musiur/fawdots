@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Regenerates all matugen-templated theme files for the given wallpaper
+# (or the last one picked in waypaper, if omitted), using whichever
+# light/dark mode is current (see theme-toggle). Both waypaper's
+# post_command and theme-toggle call this — it's the single place that
+# knows how to invoke matugen correctly.
+set -euo pipefail
+
+MODE_FILE="$HOME/.local/state/fawdots/theme-mode"
+WAYPAPER_CONFIG="$HOME/.config/waypaper/config.ini"
+
+wallpaper="${1:-}"
+if [ -z "$wallpaper" ]; then
+	wallpaper=$(grep -oP '^wallpaper\s*=\s*\K.*' "$WAYPAPER_CONFIG" 2>/dev/null | head -1)
+	wallpaper="${wallpaper/#\~/$HOME}"
+fi
+
+if [ -z "$wallpaper" ] || [ ! -f "$wallpaper" ]; then
+	echo "matugen-apply: no wallpaper found (checked \$1 and $WAYPAPER_CONFIG)" >&2
+	exit 1
+fi
+
+mode="dark"
+[ -f "$MODE_FILE" ] && mode="$(cat "$MODE_FILE")"
+
+matugen image "$wallpaper" --config "$HOME/.config/matugen/config.toml" --prefer saturation --mode "$mode"

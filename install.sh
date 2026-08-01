@@ -34,6 +34,8 @@ for pkg in */; do
 	echo "    stowed $pkg"
 done
 
+chmod +x ~/.local/bin/matugen-apply ~/.local/bin/theme-toggle
+
 echo "==> Setting up XDG user directories (~/Pictures, ~/Downloads, etc.)"
 xdg-user-dirs-update
 mkdir -p ~/Pictures/Wallpapers
@@ -43,4 +45,5 @@ matugen image /usr/share/hypr/wall2.png --config ~/.config/matugen/config.toml -
 
 echo "==> Done. Log out/in (or restart Hyprland) to pick up autostart changes."
 echo "    Add wallpapers to ~/Pictures/Wallpapers, then SUPER+W opens waypaper to pick one"
-echo "    (colors auto-sync to waybar/hyprlock on every change)."
+echo "    (colors auto-sync to waybar/hyprlock/kitty/GTK/borders on every change)."
+echo "    SUPER+SHIFT+D toggles light/dark mode for the current wallpaper."
