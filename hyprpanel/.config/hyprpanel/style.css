@@ -12,7 +12,7 @@
 	background-color: @PanelBackground;
 	color: #f5f5f7;
 	font-family: "Adwaita Sans", sans-serif;
-	font-size: 13px;
+	font-size: 12px;
 }
 
 #panel.top {
@@ -25,7 +25,7 @@
 
 .top .module {
 	border-radius: 0;
-	padding: 0 6px;
+	padding: 0 3px;
 }
 
 /* Flatten the workspace pager: no boxes/borders, just a soft underline
@@ -60,11 +60,11 @@
 }
 
 #clock #clockTime {
-	font-size: 13px;
+	font-size: 12px;
 	font-weight: 600;
 }
 
 #clock #clockDate {
-	font-size: 11px;
+	font-size: 10px;
 	opacity: 0.65;
 }
