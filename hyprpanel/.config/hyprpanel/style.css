@@ -1,0 +1,24 @@
+/* User overrides on top of hyprpanel's built-in default.css.
+   Only touching what needed better contrast/legibility on a slim 32px bar. */
+
+@define-color PanelBackground rgba(18, 18, 20, 0.97);
+
+#panel {
+	background-color: @PanelBackground;
+	color: #f5f5f5;
+	font-family: sans-serif;
+}
+
+#panel.top {
+	border-bottom: rgba(255, 255, 255, 0.08) 1px solid;
+}
+
+#clock #clockTime {
+	font-size: 13px;
+	font-weight: 600;
+}
+
+#clock #clockDate {
+	font-size: 11px;
+	opacity: 0.75;
+}
