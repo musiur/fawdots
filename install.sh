@@ -5,7 +5,7 @@ set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-PACMAN_PKGS=(stow hypridle hyprlock)
+PACMAN_PKGS=(stow hypridle hyprlock pipewire-pulse wireplumber)
 AUR_PKGS=(hyprpanel)
 
 echo "==> Installing pacman packages: ${PACMAN_PKGS[*]}"
@@ -26,5 +26,9 @@ for pkg in */; do
     stow --restow --target="$HOME" "$pkg"
     echo "    stowed $pkg"
 done
+
+echo "==> Masking dunst (hyprpanel owns notifications instead)"
+systemctl --user mask dunst.service 2>/dev/null || true
+pkill dunst 2>/dev/null || true
 
 echo "==> Done. Log out/in (or restart Hyprland) to pick up autostart changes."

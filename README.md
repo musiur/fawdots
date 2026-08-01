@@ -15,6 +15,16 @@ fawdots/
   install.sh                Bootstrap script for a fresh machine
 ```
 
+## Notes
+
+- **Notifications**: hyprpanel owns the DBus Notifications interface. `dunst` conflicts
+  with it (both try to claim it), so `install.sh` masks `dunst.service` via
+  `systemctl --user mask`. If you'd rather use dunst, unmask it and disable
+  notifications in hyprpanel's `config.json` instead.
+- **Audio**: hyprpanel's audio module needs a PulseAudio-compatible socket, which on
+  this system comes from `pipewire-pulse` + `wireplumber` (not installed by default
+  alongside plain `pipewire`). Both are in `install.sh`'s package list.
+
 ## Bare-minimum Hyprland ecosystem
 
 | Package    | Role                          | Source          |
