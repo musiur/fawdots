@@ -310,6 +310,11 @@ hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tr
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
+-- Screenshots (grim + slurp via hyprshot), saved to ~/Pictures and copied to clipboard
+hl.bind("Print",                  hl.dsp.exec_cmd("hyprshot -m output"))
+hl.bind(mainMod .. " + Print",    hl.dsp.exec_cmd("hyprshot -m window"))
+hl.bind(mainMod .. " + SHIFT + Print", hl.dsp.exec_cmd("hyprshot -m region --raw | swappy -f -"))
+
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
