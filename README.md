@@ -11,33 +11,47 @@ symlinks a package's files into place without copying them, so edits in
 ```
 fawdots/
   hypr/.config/hypr/       Hyprland (hyprland.lua, hyprpaper.conf, hypridle.conf, hyprlock.conf)
-  hyprpanel/.config/hyprpanel/   hyprpanel status bar/panel config
+  waybar/.config/waybar/   waybar status bar (config.jsonc, style.css)
   install.sh                Bootstrap script for a fresh machine
 ```
 
 ## Notes
 
-- **Notifications**: hyprpanel owns the DBus Notifications interface. `dunst` conflicts
-  with it (both try to claim it), so `install.sh` masks `dunst.service` via
-  `systemctl --user mask`. If you'd rather use dunst, unmask it and disable
-  notifications in hyprpanel's `config.json` instead.
-- **Audio**: hyprpanel's audio module needs a PulseAudio-compatible socket, which on
+- **Notifications**: `dunst` is the notification daemon (dbus-activated, no explicit
+  autostart needed). We tried hyprpanel first (which wants to own notifications
+  itself, conflicting with dunst) but replaced it with waybar — see below.
+- **Audio**: waybar's pulseaudio module needs a PulseAudio-compatible socket, which on
   this system comes from `pipewire-pulse` + `wireplumber` (not installed by default
   alongside plain `pipewire`). Both are in `install.sh`'s package list.
+- **Icons**: waybar's network/bluetooth/volume icons are Nerd Font glyphs (Private Use
+  Area codepoints). `ttf-nerd-fonts-symbols-common` alone only ships fontconfig rules,
+  not glyphs — you also need `ttf-nerd-fonts-symbols` for the actual font file, and the
+  family must be named explicitly in CSS (`"Symbols Nerd Font"`) since PUA codepoints
+  don't reliably trigger automatic font fallback.
 
 ## Bare-minimum Hyprland ecosystem
 
-| Package    | Role                          | Source          |
-|------------|--------------------------------|------------------|
-| hyprland   | compositor                     | pacman (extra)   |
-| hyprpaper  | wallpaper daemon                | pacman (extra)   |
-| hypridle   | idle management                 | pacman (extra)   |
-| hyprlock   | lock screen                     | pacman (extra)   |
-| hyprpanel  | status bar / panel / OSD        | AUR              |
-| hyprlauncher | app launcher (bound to SUPER+R) | pacman (extra) |
+| Package        | Role                             | Source        |
+|----------------|-----------------------------------|----------------|
+| hyprland       | compositor                        | pacman (extra) |
+| hyprpaper      | wallpaper daemon                   | pacman (extra) |
+| hypridle       | idle management                    | pacman (extra) |
+| hyprlock       | lock screen                        | pacman (extra) |
+| waybar         | status bar                         | pacman (extra) |
+| dunst          | notification daemon                | pacman (extra) |
+| networkmanager | network management + waybar module | pacman (extra) |
+| bluez          | bluetooth stack + waybar module    | pacman (extra) |
+| hyprlauncher   | app launcher (bound to SUPER+R)    | pacman (extra) |
 
-`hyprpaper`, `hypridle`, and `hyprpanel` are autostarted from `hyprland.lua`.
-`SUPER+L` locks the session via `hyprlock`.
+`hyprpaper`, `hypridle`, and `waybar` are autostarted from `hyprland.lua`.
+`SUPER+L` locks the session via `hyprlock`. waybar's layer surface is blurred
+via a Hyprland `layer_rule` (namespace `waybar`) for a frosted-glass look —
+its background alpha is intentionally low (0.45) so the blur is visible.
+
+We evaluated hyprpanel first for the bar (see git history) but it has a fixed
+module set with no active-window-title module and no native network/bluetooth
+modules (those need a registered tray icon instead), so we switched to waybar,
+which has both plus more flexible CSS.
 
 ## Screenshots
 

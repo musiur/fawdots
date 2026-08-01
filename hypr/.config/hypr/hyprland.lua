@@ -50,9 +50,9 @@ local menu        = "hyprlauncher"
 hl.on("hyprland.start", function ()
     hl.exec_cmd("hyprpaper")
     hl.exec_cmd("hypridle")
-    -- Small delay: hyprpanel crash-loops and gives up if pipewire-pulse/wireplumber
-    -- haven't finished activating yet on a fresh boot.
-    hl.exec_cmd("sleep 2 && hyprpanel")
+    -- Small delay so pipewire-pulse/wireplumber have finished activating
+    -- before waybar's pulseaudio module queries them on a fresh boot.
+    hl.exec_cmd("sleep 2 && waybar")
 end)
 
 
@@ -358,10 +358,10 @@ hl.window_rule({
 --     no_anim = true,
 -- })
 
--- Blur hyprpanel's layer surface (macOS-style frosted top bar)
+-- Blur waybar's layer surface (macOS-style frosted top bar)
 hl.layer_rule({
-    name  = "blur-hyprpanel",
-    match = { namespace = "^com\\.c0dedbad\\.hyprpanel\\.client$" },
+    name  = "blur-waybar",
+    match = { namespace = "^waybar$" },
     blur = true,
     ignore_alpha = 0.1,
 })
