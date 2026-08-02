@@ -8,7 +8,9 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 PACMAN_PKGS=(stow hypridle hyprlock pipewire-pulse wireplumber grim slurp wl-clipboard
 	satty hyprshot xdg-user-dirs waybar networkmanager network-manager-applet bluez
 	bluez-utils blueman pavucontrol ttf-nerd-fonts-symbols dunst matugen kitty adwaita-fonts
-	adw-gtk-theme nautilus polkit-kde-agent cliphist swayosd hyprpicker wf-recorder)
+	adw-gtk-theme nautilus polkit-kde-agent cliphist swayosd hyprpicker wf-recorder
+	hyprlauncher playerctl brightnessctl xdg-desktop-portal xdg-desktop-portal-hyprland
+	xdg-desktop-portal-gtk)
 AUR_PKGS=(waypaper)
 
 echo "==> Installing pacman packages: ${PACMAN_PKGS[*]}"
