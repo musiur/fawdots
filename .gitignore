@@ -5,4 +5,3 @@
 # ~/.config/waybar is a whole-directory stow symlink, so this file physically
 # lands inside the repo even though it's a build artifact, not source.
 waybar/.config/waybar/colors.css
-gtk-4.0/.config/gtk-4.0/gtk.css
