@@ -33,6 +33,16 @@ hl.monitor({
     scale    = "auto",
 })
 
+-- Built-in laptop panel: Hyprland's auto-scale picks 1.5 here, which is
+-- too aggressive for this resolution/size — force 1.0 for this panel
+-- specifically, leave every other monitor on auto (see rule above).
+hl.monitor({
+    output   = "desc:AU Optronics 0xE6B0",
+    mode     = "preferred",
+    position = "auto",
+    scale    = 1.0,
+})
+
 
 ---------------------
 ---- MY PROGRAMS ----
