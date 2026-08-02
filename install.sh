@@ -15,13 +15,16 @@ echo "==> Installing pacman packages: ${PACMAN_PKGS[*]}"
 sudo pacman -S --needed "${PACMAN_PKGS[@]}"
 
 if [ "${#AUR_PKGS[@]}" -gt 0 ]; then
-	if command -v yay >/dev/null 2>&1; then
-		echo "==> Installing AUR packages: ${AUR_PKGS[*]}"
-		yay -S --needed "${AUR_PKGS[@]}"
-	else
-		echo "==> yay not found; skipping AUR packages: ${AUR_PKGS[*]}"
-		echo "    Install an AUR helper first, then run: yay -S ${AUR_PKGS[*]}"
+	if ! command -v yay >/dev/null 2>&1; then
+		echo "==> yay not found; bootstrapping it from AUR"
+		sudo pacman -S --needed base-devel git
+		yay_build_dir="$(mktemp -d)"
+		git clone https://aur.archlinux.org/yay.git "$yay_build_dir/yay"
+		(cd "$yay_build_dir/yay" && makepkg -si)
+		rm -rf "$yay_build_dir"
 	fi
+	echo "==> Installing AUR packages: ${AUR_PKGS[*]}"
+	yay -S --needed "${AUR_PKGS[@]}"
 fi
 
 echo "==> Enabling NetworkManager and bluetooth"
@@ -41,11 +44,19 @@ echo "==> Setting up XDG user directories (~/Pictures, ~/Downloads, etc.)"
 xdg-user-dirs-update
 mkdir -p ~/Pictures/Wallpapers
 
-echo "==> Generating initial theme colors (waybar/hyprlock have nothing to show until this runs once)"
-# Goes through matugen-apply (not a raw matugen call) so the adw-gtk3
-# theme-name/gsettings sync it does after matugen runs actually happens on
-# first boot too, not just after the first real wallpaper pick/toggle.
-~/.local/bin/matugen-apply /usr/share/hypr/wall2.png
+if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+	echo "==> Generating initial theme colors (waybar/hyprlock have nothing to show until this runs once)"
+	# Goes through matugen-apply (not a raw matugen call) so the adw-gtk3
+	# theme-name/gsettings sync it does after matugen runs actually happens on
+	# first boot too, not just after the first real wallpaper pick/toggle.
+	~/.local/bin/matugen-apply /usr/share/hypr/wall2.png
+else
+	# The hyprland-colors template's post_hook runs `hyprctl reload`, which
+	# fails with nothing to abort install.sh (set -e) if there's no live
+	# Hyprland session to reload — e.g. running this before ever logging in.
+	echo "==> Not running inside Hyprland — skipping initial theme generation."
+	echo "    After logging into Hyprland, run: ~/.local/bin/matugen-apply /usr/share/hypr/wall2.png"
+fi
 
 echo "==> Done. Log out/in (or restart Hyprland) to pick up autostart changes."
 echo "    Add wallpapers to ~/Pictures/Wallpapers, then SUPER+W opens waypaper to pick one"

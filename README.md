@@ -192,14 +192,24 @@ before you've picked a real wallpaper.
 
 ## Usage on a new machine
 
+Assumes Arch + Hyprland + a login manager (this machine uses SDDM) are
+already installed and you're running the script from inside a logged-in
+Hyprland session — `install.sh` sets up the ecosystem on top of that, it
+doesn't bootstrap Hyprland itself.
+
 ```sh
 git clone git@github.com:<you>/fawdots.git ~/Documents/fawdots
 cd ~/Documents/fawdots
 ./install.sh
 ```
 
-`install.sh` installs the package set (pacman + yay) and stows every package
-directory into `$HOME`. It's safe to re-run.
+`install.sh` installs the package set via pacman, bootstraps `yay` from AUR
+if it isn't already installed (needed for `waypaper`), and stows every
+package directory into `$HOME`. It's safe to re-run. If it's ever run
+before Hyprland has been logged into at all (`$HYPRLAND_INSTANCE_SIGNATURE`
+unset), it skips the initial theme-color generation step rather than
+failing — `hyprctl reload` in one of matugen's `post_hook`s needs a live
+compositor to reload.
 
 ## Adding a new package
 
