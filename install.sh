@@ -42,7 +42,10 @@ xdg-user-dirs-update
 mkdir -p ~/Pictures/Wallpapers
 
 echo "==> Generating initial theme colors (waybar/hyprlock have nothing to show until this runs once)"
-matugen image /usr/share/hypr/wall2.png --config ~/.config/matugen/config.toml --prefer saturation
+# Goes through matugen-apply (not a raw matugen call) so the adw-gtk3
+# theme-name/gsettings sync it does after matugen runs actually happens on
+# first boot too, not just after the first real wallpaper pick/toggle.
+~/.local/bin/matugen-apply /usr/share/hypr/wall2.png
 
 echo "==> Done. Log out/in (or restart Hyprland) to pick up autostart changes."
 echo "    Add wallpapers to ~/Pictures/Wallpapers, then SUPER+W opens waypaper to pick one"
