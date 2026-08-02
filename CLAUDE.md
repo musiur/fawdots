@@ -114,6 +114,47 @@ recording, polkit agent. Multi-machine via `install.sh`.
   content). `~/Pictures/Wallpapers` starts empty on every machine; seed
   it with `/usr/share/hypr/wall{0,1,2}.png` (Hyprland's own bundled
   placeholders) to unblock waypaper/theme-toggle testing immediately.
+- **`hyprland.lua` (native Lua config, not the classic `.conf` keyword
+  format) means `hyprctl keyword ...` is rejected outright** —
+  `keyword can't work with non-legacy parsers. Use eval.` This breaks
+  **any** external tool that live-applies changes via `hyprctl keyword`,
+  which is nearly all of them — confirmed broken: **`nwg-displays`**
+  (its Apply button silently no-ops; the UI just redraws showing the
+  unchanged real state, which looks exactly like "it reverted" but
+  never actually applied). Don't install GUI monitor/workspace tools
+  expecting them to work here — edit the relevant `hl.*()` block in
+  `hyprland.lua` directly and `hyprctl reload` (that command does work).
+  Per-output monitor rules use `output = "desc:<Make> <Model>"` (from
+  `hyprctl monitors`' `description:` field) to scope a rule to one
+  panel instead of the wildcard `output = ""` block, so other machines
+  sharing this repo aren't affected by a fix for one specific screen.
+- **`wireplumber.service` / `pipewire-pulse.service` can sit enabled but
+  never actually start** (no journal entries at all, `inactive (dead)`)
+  — same class of issue as the "needs a fresh login" services listed
+  under Multi-machine status below, just for audio instead. Symptom:
+  Bluetooth audio devices connect and then immediately disconnect
+  (`bluetoothd` logs `a2dp-sink profile connect failed ... Protocol not
+  available`, since nothing registered the profile) — or plain silence
+  with no obvious cause. Fix: `systemctl --user start wireplumber
+  pipewire-pulse`. Also note: restarting `wireplumber` mid-session (not
+  a fresh start) can leave the PipeWire IPC briefly deadlocked —
+  `wpctl`/`pw-dump` hang instead of erroring. Recovery: stop
+  `wireplumber pipewire-pulse pipewire pipewire.socket
+  pipewire-pulse.socket`, wait, then start `wireplumber` first, then
+  `pipewire-pulse`.
+- **Bluetooth audio can negotiate AAC, report the sink as `RUNNING` with
+  correct volume/routing, and still be silent** — `libfdk-aac` was
+  properly installed and linked, so this wasn't a missing-codec issue,
+  just a bad AAC path for this specific adapter/device pairing (CMF
+  Neckband Pro). Confirmed by switching the card profile to SBC live
+  (`pactl set-card-profile bluez_card.<MAC> a2dp-sink-sbc`) — worked
+  immediately. Made permanent via
+  `wireplumber/.config/wireplumber/wireplumber.conf.d/51-bluez-codecs.conf`
+  (`bluez5.codecs = [ sbc, sbc_xq ]`, dropping AAC from the negotiable
+  set entirely). This is a blanket fix for *any* Bluetooth device on
+  this machine, not just this one neckband — if a future device
+  actually needs AAC and works fine with it, this file is the first
+  place to check.
 
 ## Multi-machine status
 
