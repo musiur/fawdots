@@ -9,7 +9,7 @@
 
 	"modules-left": ["hyprland/workspaces", "hyprland/window"],
 	"modules-center": [],
-	"modules-right": ["tray", "network", "bluetooth", "pulseaudio", "clock"],
+	"modules-right": ["tray", "network", "bluetooth", "battery", "pulseaudio", "clock"],
 
 	"hyprland/workspaces": {
 		"format": "{icon}",
@@ -47,6 +47,16 @@
 		"tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
 		"tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
 		"on-click": "blueman-manager"
+	},
+
+	"battery": {
+		"format": "{icon}  {capacity}%",
+		"format-charging": "  {capacity}%",
+		"format-icons": ["", "", "", "", ""],
+		"states": {
+			"warning": 30,
+			"critical": 15
+		}
 	},
 
 	"pulseaudio": {

@@ -22,6 +22,7 @@ window#waybar.top {
 #tray,
 #network,
 #bluetooth,
+#battery,
 #pulseaudio,
 #clock {
 	padding: 0 8px;
@@ -58,6 +59,19 @@ window#waybar.top {
 
 #network,
 #bluetooth,
-#pulseaudio {
+#pulseaudio,
+#battery {
 	padding: 0 6px;
+}
+
+#battery.warning {
+	color: #f5a623;
+}
+
+#battery.critical {
+	color: #e05555;
+}
+
+#battery.charging {
+	color: @primary;
 }
