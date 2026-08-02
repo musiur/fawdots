@@ -15,7 +15,7 @@ fawdots/
   matugen/.config/matugen/ Wallpaper → color scheme pipeline (config.toml, templates/)
   waypaper/.config/waypaper/ GUI wallpaper picker config
   kitty/.config/kitty/     Terminal (kitty.conf includes matugen-generated colors.conf)
-  scripts/.local/bin/      matugen-apply, theme-toggle (light/dark mode, SUPER+SHIFT+D)
+  scripts/.local/bin/      matugen-apply, theme-toggle, record-toggle
   install.sh                Bootstrap script for a fresh machine
 ```
 
@@ -35,17 +35,23 @@ fawdots/
 
 ## Bare-minimum Hyprland ecosystem
 
-| Package        | Role                             | Source        |
-|----------------|-----------------------------------|----------------|
-| hyprland       | compositor                        | pacman (extra) |
-| hyprpaper      | wallpaper daemon                   | pacman (extra) |
-| hypridle       | idle management                    | pacman (extra) |
-| hyprlock       | lock screen                        | pacman (extra) |
-| waybar         | status bar                         | pacman (extra) |
-| dunst          | notification daemon                | pacman (extra) |
-| networkmanager | network management + waybar module | pacman (extra) |
-| bluez          | bluetooth stack + waybar module    | pacman (extra) |
-| hyprlauncher   | app launcher (bound to SUPER+R)    | pacman (extra) |
+| Package          | Role                                | Source         |
+|------------------|--------------------------------------|-----------------|
+| hyprland         | compositor                          | pacman (extra) |
+| hyprpaper        | wallpaper daemon                    | pacman (extra) |
+| hypridle         | idle management                     | pacman (extra) |
+| hyprlock         | lock screen                         | pacman (extra) |
+| waybar           | status bar                          | pacman (extra) |
+| dunst            | notification daemon                 | pacman (extra) |
+| networkmanager   | network management + waybar module  | pacman (extra) |
+| bluez            | bluetooth stack + waybar module     | pacman (extra) |
+| hyprlauncher     | app launcher (bound to SUPER+A)     | pacman (extra) |
+| nautilus         | file manager (SUPER+E)              | pacman (extra) |
+| polkit-kde-agent | privilege-escalation prompts        | pacman (extra) |
+| cliphist         | clipboard history (SUPER+SHIFT+V)   | pacman (extra) |
+| swayosd          | volume/brightness OSD popup         | pacman (extra) |
+| hyprpicker       | color picker (SUPER+SHIFT+C)        | pacman (extra) |
+| wf-recorder      | screen recording (SUPER+SHIFT+R)    | pacman (extra) |
 
 `hyprpaper`, `hypridle`, and `waybar` are autostarted from `hyprland.lua`.
 `SUPER+L` locks the session via `hyprlock`. waybar's layer surface is blurred
@@ -71,6 +77,37 @@ satty has a compact top toolbar out of the box). satty also has no crop
 tool — select a smaller region with slurp instead. Annotated screenshots
 save to `~/Pictures/satty-<timestamp>.png` and copy to clipboard on demand
 via satty's toolbar/keybinds (see `satty --man` for the full list).
+
+## Other productivity keybinds
+
+| Key | Action |
+|---|---|
+| `SUPER+SHIFT+V` | Clipboard history picker |
+| `SUPER+SHIFT+C` | Pick a color from screen, copies hex to clipboard, sends a notification |
+| `SUPER+SHIFT+R` | Toggle screen recording, saves to `~/Videos/recording-<timestamp>.mp4` |
+
+- **Clipboard history**: `wl-paste --watch cliphist store` runs in autostart,
+  building a history. `SUPER+SHIFT+V` runs
+  `cliphist list | hyprlauncher --dmenu | cliphist decode | wl-copy` —
+  hyprlauncher already supports a dmenu-compatible mode (`--dmenu`), so no
+  separate picker app (wofi/rofi/fuzzel) was needed.
+- **Color picker**: `hyprpicker -a -n` (autocopy + notify).
+- **Screen recording**: `scripts/.local/bin/record-toggle` checks whether
+  `wf-recorder` is already running — if so it sends `SIGINT` (lets it
+  finalize the file cleanly) and notifies where it saved; otherwise it
+  starts a new timestamped recording.
+- **Volume/brightness OSD**: `swayosd-server` runs in autostart;
+  `XF86Audio*`/`XF86MonBrightness*` keys call `swayosd-client`, which both
+  shows the popup and performs the actual change (so it replaces, not
+  supplements, the old direct `wpctl`/`brightnessctl` calls). Those old
+  calls are kept as an `||` fallback in case `swayosd-server` isn't
+  reachable over D-Bus for some reason — seen transiently while restarting
+  it repeatedly during setup/testing, not an issue in normal use.
+- **Polkit agent**: `polkit-kde-agent` was already installed on this system
+  but nothing was actually starting it, so privileged GUI actions (e.g.
+  NetworkManager system connections, disk mounting) would silently fail
+  with no password prompt. Added to autostart
+  (`/usr/lib/polkit-kde-authentication-agent-1`).
 
 ## Theme / wallpaper sync
 

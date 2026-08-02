@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Toggles wf-recorder: starts recording the focused monitor to a timestamped
+# file in ~/Videos if not already running, or stops (and finalizes) it if it is.
+set -euo pipefail
+
+OUT_DIR="$HOME/Videos"
+mkdir -p "$OUT_DIR"
+
+if pgrep -x wf-recorder >/dev/null 2>&1; then
+	pkill -INT -x wf-recorder
+	command -v notify-send >/dev/null 2>&1 && notify-send "Screen recording" "Stopped, saved to $OUT_DIR"
+else
+	file="$OUT_DIR/recording-$(date +%Y%m%d-%H%M%S).mp4"
+	nohup wf-recorder -f "$file" >/tmp/wf-recorder.log 2>&1 &
+	disown
+	command -v notify-send >/dev/null 2>&1 && notify-send "Screen recording" "Started: $file"
+fi
