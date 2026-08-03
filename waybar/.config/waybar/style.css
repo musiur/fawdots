@@ -8,6 +8,13 @@
 	min-height: 0;
 }
 
+/* Monospace so the custom-clock tooltip's hand-built calendar grid
+   stays aligned — cal-style output relies on fixed character widths,
+   which "Adwaita Sans" (proportional) breaks. */
+tooltip {
+	font-family: "Adwaita Mono", monospace;
+}
+
 window#waybar {
 	background-color: alpha(@background, 0.45);
 	color: @foreground;

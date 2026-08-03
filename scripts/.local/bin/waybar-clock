@@ -1,18 +1,55 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 # Outputs date/time as waybar custom-module JSON (text + tooltip).
 #
 # Exists because waybar's built-in `clock` module uses libfmt's C++20
 # chrono formatter, which doesn't support the GNU no-leading-zero
 # modifiers (%-d, %-I) needed for "Mon, 21 August - 3:35 PM" style
 # output — confirmed by testing each specifier individually against a
-# minimal waybar config. GNU coreutils `date` supports them fine, so
-# this just shells out to that instead.
-set -euo pipefail
+# minimal waybar config. Python's strftime supports them fine (glibc).
+#
+# The tooltip is a hand-built month calendar rather than piping `cal`:
+# cal's alignment relies on a monospace font (handled via the `tooltip`
+# CSS rule in style.css) and highlights today using ANSI reverse-video,
+# which doesn't mean anything inside a GTK/Pango tooltip — so today
+# never visibly stood out. Built here instead with Pango <span> markup
+# using the theme's live accent color, which custom modules render
+# as-is (waybar's `escape` option defaults to false).
+import calendar
+import json
+import re
+from datetime import datetime
+from pathlib import Path
 
-text=$(date '+%a, %-e %B - %-I:%M %p')
-tooltip=$(cal)
+now = datetime.now()
+text = now.strftime("%a, %-e %B - %-I:%M %p")
 
-python3 -c '
-import json, sys
-print(json.dumps({"text": sys.argv[1], "tooltip": sys.argv[2]}))
-' "$text" "$tooltip"
+colors_css = Path.home() / ".config/waybar/colors.css"
+primary, background = "#acc7ff", "#111318"
+if colors_css.exists():
+    css = colors_css.read_text()
+    m = re.search(r"@define-color primary (#[0-9a-fA-F]+);", css)
+    if m:
+        primary = m.group(1)
+    m = re.search(r"@define-color background (#[0-9a-fA-F]+);", css)
+    if m:
+        background = m.group(1)
+
+cal = calendar.Calendar(firstweekday=6)  # Sunday-first, matches `cal`
+lines = [
+    now.strftime("%B %Y").center(20),
+    "Su Mo Tu We Th Fr Sa",
+]
+for week in cal.monthdayscalendar(now.year, now.month):
+    cells = []
+    for day in week:
+        if day == 0:
+            cells.append("  ")
+        elif day == now.day:
+            cells.append(
+                f'<span background="{primary}" foreground="{background}"><b>{day:2d}</b></span>'
+            )
+        else:
+            cells.append(f"{day:2d}")
+    lines.append(" ".join(cells))
+
+print(json.dumps({"text": text, "tooltip": "\n".join(lines)}))
