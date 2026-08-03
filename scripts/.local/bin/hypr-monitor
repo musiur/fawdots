@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Quick resolution/scale picker for the focused monitor, applied live.
+#
+# Exists because this repo's hyprland.lua uses Hyprland's native Lua
+# config, which rejects `hyprctl keyword` — the mechanism nwg-displays
+# and most other monitor GUIs rely on to apply changes. `hyprctl eval`
+# is the only way to change monitor settings live here, and no GUI tool
+# knows to use it, so this is a minimal dmenu-driven substitute (see
+# CLAUDE.md's Lua-config gotcha for the full story).
+#
+# This only applies live, same as nwg-displays' Apply would — it does
+# NOT persist across reload/reboot. To make a change permanent, edit the
+# matching hl.monitor() block in hyprland.lua and `hyprctl reload`.
+set -euo pipefail
+
+# hyprlauncher's dmenu mode has no --prompt flag, so the current value is
+# marked inline in each list instead.
+mon_json=$(hyprctl monitors -j | jq -r '[.[] | select(.focused == true)][0]')
+name=$(echo "$mon_json" | jq -r '.name')
+cur_scale=$(echo "$mon_json" | jq -r '.scale')
+
+mode=$(echo "$mon_json" | jq -r '.availableModes[]' | sed 's/Hz$//' | hyprlauncher --dmenu)
+[ -z "$mode" ] && exit 0
+
+scale=$(printf '%s\n1.0\n1.25\n1.5\n1.75\n2.0\n' "${cur_scale} (current)" | hyprlauncher --dmenu)
+scale="${scale% (current)}"
+[ -z "$scale" ] && scale="$cur_scale"
+
+hyprctl eval "hl.monitor({output=\"$name\", mode=\"$mode\", position=\"auto\", scale=$scale})"
+
+command -v notify-send >/dev/null 2>&1 &&
+	notify-send "Monitor" "$name → $mode @ ${scale}x (live only — edit hyprland.lua to persist)"
