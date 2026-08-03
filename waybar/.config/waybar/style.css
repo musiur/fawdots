@@ -24,7 +24,7 @@ window#waybar.top {
 #bluetooth,
 #battery,
 #pulseaudio,
-#clock {
+#custom-clock {
 	padding: 0 8px;
 }
 
@@ -53,7 +53,7 @@ window#waybar.top {
 	padding-left: 12px;
 }
 
-#clock {
+#custom-clock {
 	font-weight: 600;
 }
 

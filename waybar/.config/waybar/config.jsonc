@@ -1,7 +1,7 @@
 {
 	"layer": "top",
 	"position": "top",
-	"height": 26,
+	"height": 32,
 	"spacing": 4,
 	"margin-top": 0,
 	"margin-left": 0,
@@ -9,7 +9,7 @@
 
 	"modules-left": ["hyprland/workspaces", "hyprland/window"],
 	"modules-center": [],
-	"modules-right": ["tray", "network", "bluetooth", "battery", "pulseaudio", "clock"],
+	"modules-right": ["tray", "network", "bluetooth", "battery", "pulseaudio", "custom/clock"],
 
 	"hyprland/workspaces": {
 		"format": "{icon}",
@@ -69,8 +69,10 @@
 		"on-click-right": "pavucontrol"
 	},
 
-	"clock": {
-		"format": "{:%H:%M   %Y-%m-%d}",
-		"tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+	"custom/clock": {
+		"exec": "~/.local/bin/waybar-clock",
+		"return-type": "json",
+		"interval": 30,
+		"tooltip": true
 	}
 }

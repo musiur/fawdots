@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Outputs date/time as waybar custom-module JSON (text + tooltip).
+#
+# Exists because waybar's built-in `clock` module uses libfmt's C++20
+# chrono formatter, which doesn't support the GNU no-leading-zero
+# modifiers (%-d, %-I) needed for "Mon, 21 August - 3:35 PM" style
+# output — confirmed by testing each specifier individually against a
+# minimal waybar config. GNU coreutils `date` supports them fine, so
+# this just shells out to that instead.
+set -euo pipefail
+
+text=$(date '+%a, %-e %B - %-I:%M %p')
+tooltip=$(cal)
+
+python3 -c '
+import json, sys
+print(json.dumps({"text": sys.argv[1], "tooltip": sys.argv[2]}))
+' "$text" "$tooltip"
