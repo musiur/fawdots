@@ -7,10 +7,10 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 PACMAN_PKGS=(stow hyprpaper hypridle hyprlock pipewire-pulse wireplumber grim slurp wl-clipboard
 	satty hyprshot xdg-user-dirs waybar networkmanager network-manager-applet bluez
-	bluez-utils blueman pavucontrol ttf-nerd-fonts-symbols dunst matugen kitty adwaita-fonts
-	adw-gtk-theme nautilus polkit-kde-agent cliphist swayosd hyprpicker wf-recorder
-	hyprlauncher playerctl brightnessctl xdg-desktop-portal xdg-desktop-portal-hyprland
-	xdg-desktop-portal-gtk)
+	bluez-utils blueman pavucontrol ttf-nerd-fonts-symbols ttf-adwaitamono-nerd dunst matugen
+	kitty adwaita-fonts adw-gtk-theme nautilus polkit-kde-agent cliphist swayosd hyprpicker
+	wf-recorder hyprlauncher playerctl brightnessctl xdg-desktop-portal
+	xdg-desktop-portal-hyprland xdg-desktop-portal-gtk python-gobject gtk3 gtk-layer-shell)
 AUR_PKGS=(waypaper)
 
 echo "==> Installing pacman packages: ${PACMAN_PKGS[*]}"
@@ -53,13 +53,18 @@ for pkg in */; do
 	fi
 done
 
-chmod +x ~/.local/bin/matugen-apply ~/.local/bin/theme-toggle ~/.local/bin/record-toggle
+chmod +x ~/.local/bin/matugen-apply ~/.local/bin/theme-toggle ~/.local/bin/record-toggle \
+	~/.local/bin/hypr-monitor ~/.local/bin/waybar-clock ~/.local/bin/waybar-calendar
 
 echo "==> Setting up XDG user directories (~/Pictures, ~/Downloads, etc.)"
 xdg-user-dirs-update
 mkdir -p ~/Pictures/Wallpapers
 
-if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+if [ -f ~/.config/hypr/colors.lua ]; then
+	echo "==> Theme colors already exist — skipping initial generation so this update doesn't"
+	echo "    override your current wallpaper/theme. Pick a new wallpaper or run theme-toggle"
+	echo "    to regenerate."
+elif [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
 	echo "==> Generating initial theme colors (waybar/hyprlock have nothing to show until this runs once)"
 	# Goes through matugen-apply (not a raw matugen call) so the adw-gtk3
 	# theme-name/gsettings sync it does after matugen runs actually happens on
