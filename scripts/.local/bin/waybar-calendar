@@ -1,0 +1,153 @@
+#!/usr/bin/env python3
+# Click-triggered calendar popup for waybar's custom-clock module.
+#
+# Waybar tooltips are a single GTK label using Pango markup — inline
+# text styling only, no real table/grid layout. There's no way to get
+# actual bordered cells through that mechanism, so this is a separate
+# small popup using GTK's native Gtk.Calendar widget instead (real
+# grid, built-in today-highlighting, follows the system GTK theme
+# automatically).
+#
+# Positioned via gtk-layer-shell (the same mechanism waybar itself
+# uses) since plain GTK windows can't set absolute screen position on
+# Wayland. Uses its own namespace ("waybar-calendar", not "waybar") so
+# it's NOT caught by hyprland.lua's `blur` layerrule scoped to
+# namespace ^waybar$ — that rule bleeding onto unrelated popups is
+# exactly what caused the ghosting artifact on the old tooltip.
+#
+# Toggles: running it again while the popup is open closes it instead
+# of opening a second one.
+#
+# SAFETY: this must never grab keyboard/pointer input exclusively or
+# be allowed to expand past a small fixed size — a layer-shell surface
+# that does either can make the rest of the screen unclickable with no
+# way to recover short of a hard reboot (this happened once already,
+# from an earlier version of this script that set
+# GtkLayerShell.KeyboardMode.EXCLUSIVE). Keyboard mode here is
+# ON_DEMAND only (requests focus while interacted with, releases it
+# otherwise — regular Hyprland keybinds keep working throughout), the
+# window size is hard-capped and non-resizable, and there's a 60s
+# watchdog timeout that force-closes it even if every other close path
+# fails. SUPER+SHIFT+ESCAPE (hyprland.lua) unconditionally force-kills
+# the process regardless of its internal state, as a last resort.
+import os
+import re
+import signal
+from pathlib import Path
+
+import gi
+
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("GtkLayerShell", "0.1")
+from gi.repository import Gdk, GLib, Gtk, GtkLayerShell
+
+PID_FILE = Path.home() / ".local/state/fawdots/waybar-calendar.pid"
+MAX_WIDTH, MAX_HEIGHT = 280, 160
+WATCHDOG_SECONDS = 60
+
+
+def toggle_existing():
+    if not PID_FILE.exists():
+        return False
+    try:
+        pid = int(PID_FILE.read_text().strip())
+        os.kill(pid, signal.SIGTERM)
+        PID_FILE.unlink()
+        return True
+    except (ValueError, ProcessLookupError, FileNotFoundError):
+        PID_FILE.unlink(missing_ok=True)
+        return False
+
+
+def theme_colors():
+    background, foreground, primary = "#111318", "#e2e2e9", "#acc7ff"
+    colors_css = Path.home() / ".config/waybar/colors.css"
+    if not colors_css.exists():
+        return background, foreground, primary
+    text = colors_css.read_text()
+    values = {}
+    for var in ("background", "foreground", "primary"):
+        m = re.search(rf"@define-color {var} (#[0-9a-fA-F]+);", text)
+        if m:
+            values[var] = m.group(1)
+    return (
+        values.get("background", background),
+        values.get("foreground", foreground),
+        values.get("primary", primary),
+    )
+
+
+def main():
+    if toggle_existing():
+        return
+
+    PID_FILE.parent.mkdir(parents=True, exist_ok=True)
+    PID_FILE.write_text(str(os.getpid()))
+
+    win = Gtk.Window()
+    win.set_default_size(MAX_WIDTH, MAX_HEIGHT)
+    win.set_size_request(MAX_WIDTH, MAX_HEIGHT)
+    win.set_resizable(False)
+
+    GtkLayerShell.init_for_window(win)
+    GtkLayerShell.set_namespace(win, "waybar-calendar")
+    GtkLayerShell.set_layer(win, GtkLayerShell.Layer.TOP)
+    GtkLayerShell.set_anchor(win, GtkLayerShell.Edge.TOP, True)
+    GtkLayerShell.set_anchor(win, GtkLayerShell.Edge.RIGHT, True)
+    GtkLayerShell.set_margin(win, GtkLayerShell.Edge.TOP, 16)
+    GtkLayerShell.set_margin(win, GtkLayerShell.Edge.RIGHT, 8)
+    GtkLayerShell.set_keyboard_mode(win, GtkLayerShell.KeyboardMode.ON_DEMAND)
+
+    cal = Gtk.Calendar()
+    cal.set_property("show-heading", True)
+    win.add(cal)
+
+    background, foreground, primary = theme_colors()
+    css = Gtk.CssProvider()
+    css.load_from_data(
+        f"""
+        window {{
+            background-color: {background};
+            border: 1px solid alpha({foreground}, 0.15);
+        }}
+        calendar {{
+            background-color: {background};
+            color: {foreground};
+        }}
+        calendar:selected {{
+            background-color: {primary};
+            color: {background};
+        }}
+        """.encode()
+    )
+    Gtk.StyleContext.add_provider_for_screen(
+        Gdk.Screen.get_default(), css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+    )
+
+    closed = False
+
+    def cleanup(*_):
+        nonlocal closed
+        if closed:
+            return
+        closed = True
+        PID_FILE.unlink(missing_ok=True)
+        Gtk.main_quit()
+
+    win.connect("destroy", cleanup)
+    win.connect("focus-out-event", lambda *_: cleanup())
+    win.connect(
+        "key-press-event",
+        lambda _w, e: cleanup() if e.keyval == Gdk.KEY_Escape else None,
+    )
+
+    # Last-resort watchdog: force-close even if every other path fails.
+    GLib.timeout_add_seconds(WATCHDOG_SECONDS, cleanup)
+
+    win.show_all()
+    Gtk.main()
+
+
+if __name__ == "__main__":
+    main()

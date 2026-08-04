@@ -73,6 +73,7 @@
 		"exec": "~/.local/bin/waybar-clock",
 		"return-type": "json",
 		"interval": 30,
-		"tooltip": true
+		"tooltip": false,
+		"on-click": "~/.local/bin/waybar-calendar"
 	}
 }

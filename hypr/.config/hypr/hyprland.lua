@@ -296,6 +296,10 @@ hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("cliphist list | hyprlauncher
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a -n"))
 hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("~/.local/bin/record-toggle"))
 hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("~/.local/bin/hypr-monitor"))
+-- Unconditional escape hatch for the waybar-calendar popup (see that
+-- script's SAFETY note) — force-kills it regardless of internal state,
+-- independent of whatever GTK/layer-shell is doing.
+hl.bind(mainMod .. " + SHIFT + Escape", hl.dsp.exec_cmd("pkill -9 -f waybar-calendar; rm -f ~/.local/state/fawdots/waybar-calendar.pid"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(menu))
