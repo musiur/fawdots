@@ -32,6 +32,38 @@ fawdots/
   not glyphs — you also need `ttf-nerd-fonts-symbols` for the actual font file, and the
   family must be named explicitly in CSS (`"Symbols Nerd Font"`) since PUA codepoints
   don't reliably trigger automatic font fallback.
+- **App launcher (SUPER+A)**: `nwggrid` (from AUR `nwg-launchers`), a GTK3
+  icon-grid launcher — GNOME Activities-overview/Ubuntu-dash style, not a
+  search-list picker. `hyprlauncher` was tried first but it's architecturally
+  a fuzzy-search text list (like rofi/wofi), with no grid mode at all, so it
+  couldn't produce that look regardless of theming. Being GTK3, `nwggrid`
+  picks up the existing `adw-gtk3`/`adw-gtk3-dark` + matugen `gtk-3.0/gtk.css`
+  theme automatically — no separate template needed. `hyprlauncher` stays
+  installed for its `--dmenu` mode (clipboard history, monitor-mode picker),
+  themed via `hyprtoolkit.conf` (see below).
+
+  `nwg-launchers/.config/nwg-launchers/nwggrid/style.css` overrides
+  nwggrid's shipped defaults in two ways: the matched/focused tile gets a
+  `border-color: @theme_selected_bg_color` instead of a plain
+  `box-shadow`, and every hardcoded grey (`#999`/`#ccc`/etc.) is replaced
+  with `@theme_fg_color`/`@borders`. Those `@name` references aren't a new
+  theming pipeline — they're the same GTK named colors matugen's
+  `gtk-3.0/gtk.css` template already overrides for every other GTK3 app,
+  so nwggrid's highlight color and text just inherit whatever the current
+  wallpaper/light-dark toggle already resolved them to.
+
+  The launcher window itself is blurred via a `^~nwggrid$` layer_rule in
+  `hyprland.lua` (gtk-layer-shell's default namespace when an app never
+  calls `gtk_layer_set_namespace`, confirmed via `hyprctl layers` — note
+  the leading `~`). nwggrid's own background dimming is CLI-flag-only
+  (`-b`/`-o`, not configurable from `grid.conf`) and defaults to a fixed
+  black scrim, which would look wrong blurred over a light-mode theme.
+  `scripts/.local/bin/nwggrid-launch` (bound to SUPER+A instead of raw
+  `nwggrid`) works around this by reading the current `theme_bg_color` out
+  of `gtk-3.0/gtk.css` at launch time and passing it as `-b <hex>73`
+  (~0.45 alpha, matching waybar's frosted-glass alpha) — falls back to
+  plain `nwggrid` if that file doesn't exist yet (fresh machine, matugen
+  never run).
 
 ## Bare-minimum Hyprland ecosystem
 
@@ -45,7 +77,8 @@ fawdots/
 | dunst            | notification daemon                 | pacman (extra) |
 | networkmanager   | network management + waybar module  | pacman (extra) |
 | bluez            | bluetooth stack + waybar module     | pacman (extra) |
-| hyprlauncher     | app launcher (bound to SUPER+A)     | pacman (extra) |
+| nwg-launchers    | app grid launcher (SUPER+A)         | AUR            |
+| hyprlauncher     | dmenu picker (clipboard/monitor)    | pacman (extra) |
 | nautilus         | file manager (SUPER+E)              | pacman (extra) |
 | polkit-kde-agent | privilege-escalation prompts        | pacman (extra) |
 | cliphist         | clipboard history (SUPER+SHIFT+V)   | pacman (extra) |
@@ -182,6 +215,16 @@ matugen regenerates these files from templates in
   GTK4/libadwaita apps don't have this problem — they only ever have one
   visual theme and switch its light/dark rendering internally based on
   the prefer-dark-theme/color-scheme signal, which already worked.
+- `~/.config/hypr/hyprtoolkit.conf` — theme for hyprlauncher's dmenu
+  popups (clipboard history, monitor-mode picker) and any future app built
+  on [hyprtoolkit](https://github.com/hyprwm/hyprtoolkit), hyprwm's
+  non-GTK toolkit — it isn't a GTK app, but is themed to match
+  Ubuntu/Yaru's look: `Ubuntu` font family (needs
+  `ttf-ubuntu-font-family`) plus libadwaita's corner metrics (12px/6px
+  rounding). Colors still come from matugen (`primary`/`surface`/
+  `outline`/etc. roles), so it flips with the light/dark toggle like
+  everything else. No `post_hook` needed — hyprtoolkit watches this file
+  via inotify and hot-reloads it live.
 
 Generated files are **not** stow-tracked (they're build artifacts, not
 source) — only the templates that produce them are in the repo (there's no

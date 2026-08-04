@@ -51,7 +51,7 @@ hl.monitor({
 -- Set programs that you use
 local terminal    = "kitty"
 local fileManager = "nautilus"
-local menu        = "hyprlauncher"
+local menu        = "~/.local/bin/nwggrid-launch"
 
 
 -------------------
@@ -413,6 +413,19 @@ hl.layer_rule({
 hl.layer_rule({
     name  = "blur-waybar-calendar",
     match = { namespace = "^waybar-calendar$" },
+    blur = true,
+    ignore_alpha = 0.1,
+})
+
+-- Blur the app grid launcher (SUPER+A). gtk-layer-shell defaults nwggrid's
+-- namespace to "~nwggrid" (tilde prefix included, confirmed via
+-- `hyprctl layers`) since nwggrid never calls gtk_layer_set_namespace
+-- itself. nwggrid-launch (see scripts/) tints its background scrim from
+-- the current matugen color instead of nwggrid's fixed black default, so
+-- this blurs correctly in light mode too.
+hl.layer_rule({
+    name  = "blur-nwggrid",
+    match = { namespace = "^~nwggrid$" },
     blur = true,
     ignore_alpha = 0.1,
 })

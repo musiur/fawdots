@@ -27,7 +27,7 @@
 	},
 
 	"tray": {
-		"icon-size": 14,
+		"font-size": 20,
 		"spacing": 10
 	},
 
@@ -42,31 +42,34 @@
 	"bluetooth": {
 		"format": "",
 		"format-disabled": "󰂲",
-		"format-connected": " {device_alias}",
+		"format-connected": "",
 		"tooltip-format": "{controller_alias}\t{controller_address}",
 		"tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
 		"tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
-		"on-click": "blueman-manager"
+		"on-click": "blueman-manager",
+		"font-size": 12
 	},
 
 	"battery": {
-		"format": "{icon}  {capacity}%",
-		"format-charging": "  {capacity}%",
+		"format": "{icon}",
+		"format-charging": "",
 		"format-icons": ["", "", "", "", ""],
 		"states": {
 			"warning": 30,
 			"critical": 15
-		}
+		},
+		"font-size": 20
 	},
 
 	"pulseaudio": {
-		"format": "{icon}  {volume}%",
+		"format": "{icon}",
 		"format-muted": "",
 		"format-icons": {
 			"default": ["", "", ""]
 		},
 		"on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
-		"on-click-right": "pavucontrol"
+		"on-click-right": "pavucontrol",
+		"font-size": 12
 	},
 
 	"custom/clock": {

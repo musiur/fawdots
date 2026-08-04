@@ -10,8 +10,9 @@ PACMAN_PKGS=(stow hyprpaper hypridle hyprlock pipewire-pulse wireplumber grim sl
 	bluez-utils blueman pavucontrol ttf-nerd-fonts-symbols ttf-adwaitamono-nerd dunst matugen
 	kitty adwaita-fonts adw-gtk-theme nautilus polkit-kde-agent cliphist swayosd hyprpicker
 	wf-recorder hyprlauncher playerctl brightnessctl xdg-desktop-portal
-	xdg-desktop-portal-hyprland xdg-desktop-portal-gtk python-gobject gtk3 gtk-layer-shell)
-AUR_PKGS=(waypaper)
+	xdg-desktop-portal-hyprland xdg-desktop-portal-gtk python-gobject gtk3 gtk-layer-shell
+	ttf-ubuntu-font-family)
+AUR_PKGS=(waypaper nwg-launchers)
 
 echo "==> Installing pacman packages: ${PACMAN_PKGS[*]}"
 sudo pacman -S --needed "${PACMAN_PKGS[@]}"
@@ -54,7 +55,8 @@ for pkg in */; do
 done
 
 chmod +x ~/.local/bin/matugen-apply ~/.local/bin/theme-toggle ~/.local/bin/record-toggle \
-	~/.local/bin/hypr-monitor ~/.local/bin/waybar-clock ~/.local/bin/waybar-calendar
+	~/.local/bin/hypr-monitor ~/.local/bin/waybar-clock ~/.local/bin/waybar-calendar \
+	~/.local/bin/nwggrid-launch
 
 echo "==> Setting up XDG user directories (~/Pictures, ~/Downloads, etc.)"
 xdg-user-dirs-update

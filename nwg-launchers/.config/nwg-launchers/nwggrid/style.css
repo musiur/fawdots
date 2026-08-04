@@ -1,0 +1,58 @@
+/* nwggrid's shipped default, adjusted to:
+   - theme_* / borders named colors instead of hardcoded greys, so this
+     respects the light/dark toggle (these are already kept in sync with
+     the wallpaper by matugen — see gtk-3.0/gtk.css) instead of only
+     looking right in dark mode.
+   - a primary-color border on the matched/focused tile instead of a
+     box-shadow, so the highlight color also tracks the current wallpaper.
+   - every tile reserving the same border space at all times (transparent
+     when unmatched), so gaining/losing the border on match doesn't shift
+     the grid layout. */
+
+button, label, image {
+    background: none;
+    border-style: none;
+    box-shadow: none;
+    color: @theme_fg_color;
+}
+
+button {
+    padding: 8px;
+    margin: 5px;
+    text-shadow: none;
+    border-radius: 6px;
+}
+
+button:hover {
+    background-color: alpha(@theme_fg_color, 0.1);
+}
+
+button:focus {
+    border-color: @theme_selected_bg_color;
+}
+
+button:checked {
+    background-color: alpha(@theme_fg_color, 0.1);
+}
+
+#searchbox {
+    background: alpha(@theme_fg_color, 0.1);
+    border: none;
+    color: @theme_fg_color;
+    min-width: 600px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+#separator {
+    background-color: alpha(@borders, 0.5);
+    margin-left: 500px;
+    margin-right: 500px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#description {
+    margin-bottom: 20px;
+}

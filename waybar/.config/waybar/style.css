@@ -20,6 +20,7 @@
 tooltip {
 	font-family: "Adwaita Mono", monospace;
 	background-color: @background;
+	color: @foreground;
 	box-shadow: none;
 	border: 1px solid alpha(@foreground, 0.1);
 }
