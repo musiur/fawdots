@@ -10,9 +10,18 @@
 
 /* Monospace so the custom-clock tooltip's hand-built calendar grid
    stays aligned — cal-style output relies on fixed character widths,
-   which "Adwaita Sans" (proportional) breaks. */
+   which "Adwaita Sans" (proportional) breaks. Fully opaque background
+   (no alpha()) and no box-shadow: GTK tooltip popups share waybar's
+   layer-shell namespace, so the `blur` layerrule in hyprland.lua
+   bleeds onto them too — combined with GTK/Adwaita's default tooltip
+   box-shadow, transparent areas showed whatever was behind as a
+   blurred "ghost" panel. An opaque background gives the blur nothing
+   to show through. */
 tooltip {
 	font-family: "Adwaita Mono", monospace;
+	background-color: @background;
+	box-shadow: none;
+	border: 1px solid alpha(@foreground, 0.1);
 }
 
 window#waybar {
