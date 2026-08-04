@@ -33,6 +33,7 @@
 import os
 import re
 import signal
+from datetime import datetime
 from pathlib import Path
 
 import gi
@@ -102,6 +103,23 @@ def main():
     cal = Gtk.Calendar()
     cal.set_property("show-heading", True)
     win.add(cal)
+
+    # Gtk.Calendar's "selected day" is just a day-of-month number,
+    # independent of which month is being viewed — it defaults to
+    # today's day-of-month and then stays put across month navigation,
+    # so every month ends up showing that same day-number highlighted
+    # as if it were "today". Explicitly re-sync the selection (or clear
+    # it) on every month/year change so only the real current date, in
+    # the real current month, is ever highlighted.
+    def sync_today_selection(calendar):
+        year, month0, _day = calendar.get_date()  # month is 0-indexed
+        today = datetime.now()
+        if year == today.year and month0 == today.month - 1:
+            calendar.select_day(today.day)
+        else:
+            calendar.select_day(0)  # 0 = no day selected
+
+    cal.connect("month-changed", sync_today_selection)
 
     background, foreground, primary = theme_colors()
     css = Gtk.CssProvider()
