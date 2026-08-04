@@ -21,7 +21,7 @@ from datetime import datetime
 from pathlib import Path
 
 now = datetime.now()
-text = now.strftime("%a, %-e %B - %-I:%M %p")
+text = now.strftime("%a %-e %B %-I:%M %p")
 
 colors_css = Path.home() / ".config/waybar/colors.css"
 primary, background = "#acc7ff", "#111318"
@@ -44,7 +44,7 @@ for week in cal.monthdayscalendar(now.year, now.month):
     for day in week:
         if day == 0:
             cells.append("  ")
-        elif day == now.day:
+        elif day == now.day and now.month == now.month and now.year == now.year:
             cells.append(
                 f'<span background="{primary}" foreground="{background}"><b>{day:2d}</b></span>'
             )
