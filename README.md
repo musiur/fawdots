@@ -10,7 +10,7 @@ symlinks a package's files into place without copying them, so edits in
 
 ```
 fawdots/
-  hypr/.config/hypr/       Hyprland (hyprland.lua, hyprpaper.conf, hypridle.conf)
+  hypr/.config/hypr/       Hyprland (hyprland.lua, hypridle.conf)
   waybar/.config/waybar/   waybar status bar (config.jsonc, style.css)
   matugen/.config/matugen/ Wallpaper → color scheme pipeline (config.toml, templates/)
   waypaper/.config/waypaper/ GUI wallpaper picker config
@@ -70,7 +70,7 @@ fawdots/
 | Package          | Role                                | Source         |
 |------------------|--------------------------------------|-----------------|
 | hyprland         | compositor                          | pacman (extra) |
-| hyprpaper        | wallpaper daemon                    | pacman (extra) |
+| swaybg           | wallpaper renderer (static image)   | pacman (extra) |
 | hypridle         | idle management                     | pacman (extra) |
 | hyprlock         | lock screen                         | pacman (extra) |
 | waybar           | status bar                          | pacman (extra) |
@@ -86,7 +86,8 @@ fawdots/
 | hyprpicker       | color picker (SUPER+SHIFT+C)        | pacman (extra) |
 | wf-recorder      | screen recording (SUPER+SHIFT+R)    | pacman (extra) |
 
-`hyprpaper`, `hypridle`, and `waybar` are autostarted from `hyprland.lua`.
+`waypaper --restore` (which launches `swaybg` with the last-picked wallpaper),
+`hypridle`, and `waybar` are autostarted from `hyprland.lua`.
 `SUPER+L` locks the session via `hyprlock`. waybar's layer surface is blurred
 via a Hyprland `layer_rule` (namespace `waybar`) for a frosted-glass look —
 its background alpha is intentionally low (0.45) so the blur is visible.

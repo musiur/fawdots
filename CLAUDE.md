@@ -9,7 +9,7 @@ where things stand across machines.
 ## What this is
 
 A from-scratch Hyprland setup built interactively over one long session:
-core ecosystem (hyprpaper/hypridle/hyprlock) → waybar (replaced hyprpanel
+core ecosystem (hypridle/hyprlock, wallpaper via swaybg) → waybar (replaced hyprpanel
 partway through) → screenshots (hyprshot/satty) → bluetooth/audio/network
 management → wallpaper-driven theme sync (waypaper + matugen, covering
 waybar, hyprlock, Hyprland borders, kitty, GTK3/GTK4 apps, with a
@@ -97,6 +97,24 @@ recording, polkit agent. Multi-machine via `install.sh`.
   rapid manual start/stop during testing — resolved by a clean
   `pkill + restart`, not a real bug. Volume/brightness keybinds keep a
   `swayosd-client ... || wpctl/brightnessctl ...` fallback regardless.
+- **hyprpaper's main thread could get stuck spinning at 100% CPU**
+  indefinitely (confirmed live: pegged one core for 13+ minutes, CPU temp
+  sat at 81°C, laptop chassis noticeably hot to the touch) — happened more
+  than once, trigger never isolated (not simply "large wallpaper": a fresh
+  `hyprpaper` process handling the same 7680×4191/28MB image settled to
+  <1% CPU within seconds, so it's a runtime state bug, not an
+  image-size issue). Rather than chase it further, replaced hyprpaper
+  entirely with **swaybg** (`waypaper`'s `backend = swaybg`), which only
+  ever does one static blit per output and has no daemon/IPC surface to
+  get stuck in. Autostart changed from `hl.exec_cmd("hyprpaper")` to
+  `hl.exec_cmd("waypaper --restore")` — swaybg takes the wallpaper path
+  as a CLI arg with no persistent config file, so `--restore` (waypaper's
+  built-in "relaunch last wallpaper+backend" flag) replaces what
+  `hyprpaper.conf`'s static `preload`/`wallpaper` lines used to do.
+  `hypr/.config/hypr/hyprpaper.conf` was deleted (no longer used).
+  matugen theming is unaffected either way — `post_command` (which runs
+  matugen-apply) fires off waypaper's own wallpaper-change hook,
+  independent of which backend actually renders the image.
 - **hyprlauncher supports `--dmenu`** (stdin, newline-separated, dmenu
   convention) — used directly for cliphist's picker
   (`cliphist list | hyprlauncher --dmenu | cliphist decode | wl-copy`).

@@ -62,7 +62,9 @@ local menu        = "~/.local/bin/nwggrid-launch"
 
 -- Autostart necessary processes (like notifications daemons, status bars, etc.)
 hl.on("hyprland.start", function ()
-    hl.exec_cmd("hyprpaper")
+    -- swaybg has no daemon/IPC of its own; waypaper --restore looks up the
+    -- last-picked wallpaper+backend from its own config and launches it.
+    hl.exec_cmd("waypaper --restore")
     hl.exec_cmd("hypridle")
     -- blueman-applet registers the BlueZ pairing agent (PIN/passkey prompts);
     -- without it, blueman-manager can see devices but pairing silently fails.
