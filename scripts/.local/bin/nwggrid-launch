@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Launches nwggrid with its background scrim tinted from the current
+# matugen background color (read from gtk.css, which is already kept in
+# sync with the wallpaper and light/dark toggle) instead of nwggrid's
+# fixed black default — needed so the frosted-glass blur (see the
+# "^~nwggrid$" layer_rule in hyprland.lua) blurs the right color in light
+# mode too, not a black scrim over a light theme.
+set -euo pipefail
+
+GTK_COLORS="$HOME/.config/gtk-3.0/gtk.css"
+bg=""
+[ -f "$GTK_COLORS" ] && bg="$(grep -oP '@define-color theme_bg_color #\K[0-9a-fA-F]{6}' "$GTK_COLORS" || true)"
+
+if [ -n "$bg" ]; then
+	# 73 hex (~0.45 alpha) matches waybar's frosted-glass alpha.
+	exec nwggrid -b "${bg}73"
+else
+	exec nwggrid
+fi
