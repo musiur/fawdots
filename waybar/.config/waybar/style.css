@@ -39,11 +39,13 @@ window#waybar.top {
 #tray,
 #temperature,
 #network,
+#memory,
 #bluetooth,
 #battery,
 #pulseaudio,
 #custom-clock {
 	padding: 0 8px;
+	font-weight: 600;
 }
 
 #workspaces button {
@@ -66,17 +68,13 @@ window#waybar.top {
 }
 
 #window {
-	font-weight: 600;
 	color: @foreground;
 	padding-left: 12px;
 }
 
-#custom-clock {
-	font-weight: 600;
-}
-
 #temperature,
 #network,
+#memory,
 #bluetooth,
 #pulseaudio,
 #battery {

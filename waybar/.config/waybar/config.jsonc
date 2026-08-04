@@ -9,7 +9,7 @@
 
 	"modules-left": ["hyprland/workspaces", "hyprland/window"],
 	"modules-center": [],
-	"modules-right": ["network", "tray", "temperature#cpu", "temperature#gpu", "bluetooth", "battery", "pulseaudio", "custom/clock"],
+	"modules-right": ["network", "tray", "memory", "temperature#cpu", "temperature#gpu", "bluetooth", "battery", "pulseaudio", "custom/clock"],
 
 	"hyprland/workspaces": {
 		"format": "{icon}",
@@ -33,16 +33,22 @@
 
 	"temperature#cpu": {
 		"hwmon-path": "/sys/class/hwmon/hwmon5/temp1_input",
-		"format": " CPU {temperatureC}°C",
+		"format": "󰘚 {temperatureC}°C",
 		"interval": 5,
 		"critical-threshold": 70
 	},
 
 	"temperature#gpu": {
 		"hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input",
-		"format": " GPU {temperatureC}°C",
+		"format": "󰢮 {temperatureC}°C",
 		"interval": 5,
 		"critical-threshold": 70
+	},
+
+	"memory": {
+		"format": "󰍛 {percentage}%",
+		"interval": 5,
+		"tooltip-format": "{used:0.1f}GiB / {total:0.1f}GiB"
 	},
 
 	"network": {
