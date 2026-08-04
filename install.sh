@@ -60,25 +60,30 @@ echo "==> Setting up XDG user directories (~/Pictures, ~/Downloads, etc.)"
 xdg-user-dirs-update
 mkdir -p ~/Pictures/Wallpapers
 
-if [ -f ~/.config/hypr/colors.lua ]; then
-	echo "==> Theme colors already exist — skipping initial generation so this update doesn't"
-	echo "    override your current wallpaper/theme. Pick a new wallpaper or run theme-toggle"
-	echo "    to regenerate."
-elif [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-	echo "==> Generating initial theme colors (waybar/hyprlock have nothing to show until this runs once)"
-	# Goes through matugen-apply (not a raw matugen call) so the adw-gtk3
-	# theme-name/gsettings sync it does after matugen runs actually happens on
-	# first boot too, not just after the first real wallpaper pick/toggle.
-	~/.local/bin/matugen-apply /usr/share/hypr/wall2.png
+if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+	echo "==> Syncing theme colors from the current wallpaper (re-applies template changes too,"
+	echo "    e.g. after a git pull — without resetting which wallpaper/mode is active)"
+	# No wallpaper arg: matugen-apply resolves the last one waypaper picked.
+	# Falls back to the bundled default only on a genuine first run, where
+	# nothing has ever been picked yet (matugen-apply exits 1 in that case).
+	~/.local/bin/matugen-apply || ~/.local/bin/matugen-apply /usr/share/hypr/wall2.png
+
+	echo "==> Reloading Hyprland config and restarting waybar so this run's changes actually"
+	echo "    show up live, not just on disk (stow updates symlinks, not running processes)"
+	hyprctl reload
+	pkill -x waybar 2>/dev/null || true
+	sleep 0.5
+	(waybar >/dev/null 2>&1 &disown)
 else
 	# The hyprland-colors template's post_hook runs `hyprctl reload`, which
 	# fails with nothing to abort install.sh (set -e) if there's no live
 	# Hyprland session to reload — e.g. running this before ever logging in.
-	echo "==> Not running inside Hyprland — skipping initial theme generation."
+	echo "==> Not running inside Hyprland — skipping theme sync and waybar restart."
 	echo "    After logging into Hyprland, run: ~/.local/bin/matugen-apply /usr/share/hypr/wall2.png"
 fi
 
-echo "==> Done. Log out/in (or restart Hyprland) to pick up autostart changes."
+echo "==> Done. Log out/in (or restart Hyprland) to pick up autostart-only changes (new"
+echo "    exec-once entries, etc.) — everything else just applied live above."
 echo "    Add wallpapers to ~/Pictures/Wallpapers, then SUPER+W opens waypaper to pick one"
 echo "    (colors auto-sync to waybar/hyprlock/kitty/GTK/borders on every change)."
 echo "    SUPER+SHIFT+D toggles light/dark mode for the current wallpaper."
