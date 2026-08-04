@@ -134,7 +134,6 @@ def main():
         calendar {{
             background-color: alpha({background}, 0.45);
             color: {foreground};
-            text-align: left;
         }}
         calendar:selected {{
             background-color: {primary};
@@ -147,6 +146,7 @@ def main():
     )
 
     closed = False
+    has_focused = False
 
     def cleanup(*_):
         nonlocal closed
@@ -156,8 +156,28 @@ def main():
         PID_FILE.unlink(missing_ok=True)
         Gtk.main_quit()
 
+    def on_focus_in(*_):
+        nonlocal has_focused
+        has_focused = True
+
+    def on_focus_out(*_):
+        # Guards against a focus-out firing before any real focus-in ever
+        # happened (a known gtk-layer-shell/ON_DEMAND edge case) — only
+        # treat focus-out as "click away to close" once focus was
+        # genuinely gained first. NOTE: in testing, focus-in fires
+        # immediately on open as expected, but something in that sandboxed
+        # session's environment (unclear what — possibly an artifact of
+        # the testing setup itself, not necessarily real usage) also
+        # issues a real focus-out ~5-13s later with nobody interacting
+        # with the window, closing it. If this reproduces during actual
+        # use, the cause is downstream of this guard and needs more
+        # investigation — this fix only covers the pre-focus-in case.
+        if has_focused:
+            cleanup()
+
     win.connect("destroy", cleanup)
-    win.connect("focus-out-event", lambda *_: cleanup())
+    win.connect("focus-in-event", on_focus_in)
+    win.connect("focus-out-event", on_focus_out)
     win.connect(
         "key-press-event",
         lambda _w, e: cleanup() if e.keyval == Gdk.KEY_Escape else None,
