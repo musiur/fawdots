@@ -403,6 +403,18 @@ hl.layer_rule({
     blur = true,
     ignore_alpha = 0.1,
 })
+
+-- Same frosted-glass treatment for the calendar popup. Separate rule,
+-- separate namespace (not "^waybar$") on purpose — see waybar-calendar's
+-- own comments on why the blur rule bleeding across unrelated popups
+-- caused a ghosting bug once already. This window has no box-shadow of
+-- its own, so blur alone is safe here.
+hl.layer_rule({
+    name  = "blur-waybar-calendar",
+    match = { namespace = "^waybar-calendar$" },
+    blur = true,
+    ignore_alpha = 0.1,
+})
 -- overlayLayerRule:set_enabled(false)
 
 -- Hyprland-run windowrule

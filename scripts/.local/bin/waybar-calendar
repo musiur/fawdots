@@ -126,12 +126,15 @@ def main():
     css.load_from_data(
         f"""
         window {{
-            background-color: {background};
+            background-color: alpha({background}, 0.45);
             border: 1px solid alpha({foreground}, 0.15);
+            border-radius: 6px;
+            padding: 4px;
         }}
         calendar {{
-            background-color: {background};
+            background-color: alpha({background}, 0.45);
             color: {foreground};
+            text-align: left;
         }}
         calendar:selected {{
             background-color: {primary};
