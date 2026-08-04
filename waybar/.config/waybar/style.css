@@ -20,6 +20,7 @@
 tooltip {
 	font-family: "Adwaita Mono", monospace;
 	background-color: @background;
+	color: @foreground;
 	box-shadow: none;
 	border: 1px solid alpha(@foreground, 0.1);
 }
@@ -36,6 +37,7 @@ window#waybar.top {
 #workspaces,
 #window,
 #tray,
+#temperature,
 #network,
 #bluetooth,
 #battery,
@@ -73,6 +75,7 @@ window#waybar.top {
 	font-weight: 600;
 }
 
+#temperature,
 #network,
 #bluetooth,
 #pulseaudio,
@@ -84,7 +87,8 @@ window#waybar.top {
 	color: #f5a623;
 }
 
-#battery.critical {
+#battery.critical,
+#temperature.critical {
 	color: #e05555;
 }
 
