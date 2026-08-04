@@ -44,7 +44,7 @@ gi.require_version("GtkLayerShell", "0.1")
 from gi.repository import Gdk, GLib, Gtk, GtkLayerShell
 
 PID_FILE = Path.home() / ".local/state/fawdots/waybar-calendar.pid"
-MAX_WIDTH, MAX_HEIGHT = 280, 160
+MAX_WIDTH, MAX_HEIGHT = 280, 172
 WATCHDOG_SECONDS = 60
 
 
@@ -90,6 +90,16 @@ def main():
     win.set_default_size(MAX_WIDTH, MAX_HEIGHT)
     win.set_size_request(MAX_WIDTH, MAX_HEIGHT)
     win.set_resizable(False)
+    win.set_app_paintable(True)
+
+    # Without an RGBA visual, the window has no alpha channel to render
+    # into — CSS alpha()/border-radius corner transparency would just
+    # flatten to opaque instead of actually showing rounded corners or
+    # letting the compositor's blur show through.
+    screen = win.get_screen()
+    rgba_visual = screen.get_rgba_visual()
+    if rgba_visual and screen.is_composited():
+        win.set_visual(rgba_visual)
 
     GtkLayerShell.init_for_window(win)
     GtkLayerShell.set_namespace(win, "waybar-calendar")
@@ -126,14 +136,15 @@ def main():
     css.load_from_data(
         f"""
         window {{
-            background-color: alpha({background}, 0.20);
+            background-color: alpha({background}, 0.45);
             border: 1px solid alpha({foreground}, 0.15);
-            border-radius: 6px;
+            border-radius: 10px;
             padding: 4px;
         }}
         calendar {{
-            background-color: alpha({background}, 0.20);
+            background-color: alpha({background}, 0.45);
             color: {foreground};
+            border-radius: 8px;
         }}
         calendar:selected {{
             background-color: {primary};
