@@ -40,3 +40,8 @@ output_path = "~/.config/gtk-4.0/settings.ini"
 [templates.hyprtoolkit]
 input_path = "~/.config/matugen/templates/hyprtoolkit.conf"
 output_path = "~/.config/hypr/hyprtoolkit.conf"
+
+[templates.sticker]
+input_path = "~/.config/matugen/templates/primary-color.txt"
+output_path = "~/.local/state/fawdots/primary-color.txt"
+post_hook = "~/.local/bin/neofetch-sticker"

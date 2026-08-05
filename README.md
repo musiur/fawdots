@@ -15,7 +15,9 @@ fawdots/
   matugen/.config/matugen/ Wallpaper → color scheme pipeline (config.toml, templates/)
   waypaper/.config/waypaper/ GUI wallpaper picker config
   kitty/.config/kitty/     Terminal (kitty.conf includes matugen-generated colors.conf)
-  scripts/.local/bin/      matugen-apply, theme-toggle, record-toggle
+  zsh/.zshrc               Shell kitty launches (Oh My Zsh + autosuggestions/syntax-highlighting)
+  neofetch/.config/neofetch/ System info + sticker art (config.conf; stickers.png is generated)
+  scripts/.local/bin/      matugen-apply, theme-toggle, record-toggle, neofetch-sticker
   install.sh                Bootstrap script for a fresh machine
 ```
 
@@ -64,6 +66,61 @@ fawdots/
   (~0.45 alpha, matching waybar's frosted-glass alpha) — falls back to
   plain `nwggrid` if that file doesn't exist yet (fresh machine, matugen
   never run).
+
+- **Shell (kitty only)**: `kitty.conf` sets `shell zsh`, so kitty launches zsh
+  regardless of the system login shell (which stays bash — not changed via
+  `chsh`). `zsh/.zshrc` sources Oh My Zsh (AUR `oh-my-zsh-git`, installed to
+  `/usr/share/oh-my-zsh` — not the curl installer's `~/.oh-my-zsh` clone, so
+  it's pacman-managed and idempotent) plus pacman's `zsh-autosuggestions` and
+  `zsh-syntax-highlighting`, sourced directly rather than as Oh My Zsh custom
+  plugins, and ends with `neofetch` so it actually runs on every new kitty
+  window (easy to forget — sourcing the plugins doesn't imply running
+  anything).
+- **Neofetch art**: `image_backend="kitty"`, `image_size="300px"` (the
+  `"auto"` default is half the terminal width — way too big for a sticker),
+  `image_source` pointing at `~/.config/neofetch/stickers.png`. `xoffset=1`/
+  `yoffset=1` nudge the image (only the image — the text column's position
+  is fixed and not configurable) down/right a bit so its vertical center
+  roughly lines up with the text block's vertical center instead of both
+  just top-aligning; see the comment above those two settings in
+  `config.conf` for the "px" vs. cells gotcha. Neofetch's non-ascii backends
+  silently fall back to ascii art if `imagemagick` isn't installed (it
+  processes the image before handing off to `kitty +kitten icat` — no
+  error, it just looks like the setting did nothing), so `imagemagick` is in
+  `install.sh`'s package list alongside `neofetch` itself.
+
+  `crop_mode="none"` (undocumented in neofetch's own config comments, but a
+  real case in its `make_thumbnail()`) — every other crop mode pipes the
+  source through ImageMagick's `convert`, which always flattens multi-frame
+  GIF/WebP to a single frame; `"none"` just copies the source file as-is, and
+  `kitty +kitten icat` detects the real format from content rather than the
+  `.png` extension neofetch renames it to, so animated stickers actually
+  animate (verified live: consecutive screenshots of the same sticker
+  differ). `neofetch-sticker` (below) matches this — it `cp`s the winning
+  file byte-for-byte rather than flattening it. Tradeoff: no auto-crop-to-
+  square, so a non-square sticker will letterbox within `image_size` rather
+  than crop — not an issue for the current (square/near-square) stickers in
+  `~/Pictures/Stickers/`.
+
+  `stickers.png` isn't a fixed asset — it's picked automatically by
+  `scripts/.local/bin/neofetch-sticker`, wired as the post_hook for
+  matugen's `sticker` template (a trivial template whose only job is
+  writing the current primary color to
+  `~/.local/state/fawdots/primary-color.txt` so the script has something to
+  read). Every wallpaper change and light/dark toggle, it scans
+  `~/Pictures/Stickers/` (not stow-tracked, same as `~/Pictures/Wallpapers`
+  — add your own images there), computes each file's average color via
+  ImageMagick, and copies whichever one is closest to the new primary color
+  into `~/.config/neofetch/stickers.png` as-is (selection only, no
+  recoloring), then deletes `~/.cache/thumbnails/neofetch/` — neofetch caches
+  its processed image keyed on `stickers.png`'s *path*, not its content or
+  mtime, so without clearing that cache every run after the first would keep
+  showing whatever sticker got cached initially, regardless of how many
+  times this script overwrites the file. Because `~/.config/neofetch`
+  pre-existed as a real directory before this repo touched it, stow symlinks
+  its files individually rather than the whole directory (see the stow quirk
+  in `CLAUDE.md`), so this generated file physically lands inside the repo —
+  it's `.gitignore`d like `waybar/colors.css`, not meant to be committed.
 
 ## Bare-minimum Hyprland ecosystem
 

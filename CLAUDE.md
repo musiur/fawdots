@@ -49,6 +49,21 @@ recording, polkit agent. Multi-machine via `install.sh`.
     nothing" reports — always check `~/Pictures/Wallpapers` first.
 - **waypaper's `post_command`** is just `~/.local/bin/matugen-apply
   "$wallpaper"` — picking a new wallpaper keeps whatever mode is active.
+- **Sticker selection piggybacks on the matugen pipeline too**, even though
+  it isn't a color template: `[templates.sticker]` writes just the current
+  primary hex to `~/.local/state/fawdots/primary-color.txt` (a trivial
+  template whose only purpose is giving its `post_hook` something to read —
+  matugen has no other way to expose a computed value to a shell command),
+  and that hook is `scripts/.local/bin/neofetch-sticker`, which scans
+  `~/Pictures/Stickers/` (ungenerated, ungitignored, seeded empty like
+  `~/Pictures/Wallpapers`), picks whichever file's average color (via
+  ImageMagick) is closest to that primary hex, and `cp`s it byte-for-byte —
+  selection only, no tinting, no re-encoding — into
+  `~/.config/neofetch/stickers.png`, then deletes
+  `~/.cache/thumbnails/neofetch/` (see the cache gotcha below — without
+  this, the sticker would visually never update). Runs on every wallpaper
+  change and light/dark toggle automatically, same as everything else
+  themed.
 
 ## Hard-won gotchas (don't re-debug these)
 
@@ -173,6 +188,71 @@ recording, polkit agent. Multi-machine via `install.sh`.
   this machine, not just this one neckband — if a future device
   actually needs AAC and works fine with it, this file is the first
   place to check.
+- **neofetch's `image_backend="kitty"` silently falls back to ascii art if
+  `imagemagick` isn't installed** — confirmed live: screenshotting neofetch
+  inside an actual kitty window (via `grim -g` on the window's geometry from
+  `hyprctl clients -j`, since `hyprctl dispatch focuswindow` doesn't work
+  either — see the `hyprland.lua` gotcha below) showed the Arch ascii logo
+  even with `image_backend="kitty"` and a valid `image_source` set. No error
+  is printed; neofetch's own source (`/usr/bin/neofetch`, the `get_image`
+  crop/resize step around line 3829) checks `type -p convert` and silently
+  swaps `image_backend` back to `"ascii"` if it's missing. Fixed by adding
+  `imagemagick` to `install.sh`'s `PACMAN_PKGS` — always check this before
+  concluding a kitty-graphics-protocol image setting "did nothing."
+- **neofetch's `xoffset`/`yoffset` config docs say "Only works with the
+  w3m backend"** — false for the kitty backend, verified live by setting
+  them and screenshotting: they visibly move the image. Two things the
+  docs also don't mention: (1) despite being labeled "px", the values are
+  plugged directly into kitty's `--place W x H @ xoffset x yoffset`
+  unconverted, and `--place` measures in terminal **cells** — so
+  `yoffset=1` moves the image down one row, not one pixel; (2) they only
+  move the *image* — the text column's start position doesn't shift with
+  them (confirmed: `xoffset=3` moved the sticker right with the info text
+  staying put), so there's no way via config to shift the text or truly
+  center the whole image+text block within the terminal — only the image
+  can be nudged within its own fixed-column slot.
+- **neofetch caches its processed image keyed on the source file's *path*,
+  never its content or mtime** — `make_thumbnail()` in `/usr/bin/neofetch`
+  only checks `[[ ! -f "${thumbnail_dir}/${image_name}" ]]` before deciding
+  whether to regenerate, and `image_name` is built from
+  `crop_mode-crop_offset-width-height-<image path>`. Since `stickers.png`'s
+  *path* never changes even though `neofetch-sticker` rewrites its content
+  on every theme change, neofetch kept showing whatever sticker got cached
+  the very first time, forever — this was the actual cause of "the terminal
+  isn't getting the image based on the theme." Fixed by having
+  `neofetch-sticker` `rm -rf ~/.cache/thumbnails/neofetch/` after every
+  write. If a future generated-image setup hits "config changed but the
+  image on screen didn't," check this cache before anything else.
+- **Animated GIF/WebP stickers don't animate through neofetch by default —
+  but they can, and now do.** Two independent things flatten multi-frame
+  images to a static one: (1) neofetch's own `make_thumbnail()` — every
+  `crop_mode` except the undocumented `"none"` pipes the source through
+  ImageMagick's `convert`, which always collapses multi-frame images to one
+  frame regardless of output format; (2) `neofetch-sticker` used to grab
+  only `magick "${best_file}[0]"` (explicitly the first frame) when copying
+  the winner into `stickers.png`. Fixed both: `crop_mode="none"` (just
+  copies the source file, letting `kitty +kitten icat` receive it
+  untouched) and `neofetch-sticker` now does a plain `cp` instead of a
+  `magick [0]` extraction. Verified live and non-obvious: `icat` correctly
+  detects the real format from file *content*, not the `.png` extension
+  neofetch's cache renames everything to, and genuinely animates it — two
+  screenshots of the same rendered sticker 1.5s apart differed by ~20k
+  pixels. Tradeoff: `crop_mode="none"` skips the auto-crop-to-square step,
+  so a non-square sticker will letterbox within `image_size` instead of
+  being cropped — fine for the current square/near-square stickers, worth
+  re-checking if a very wide/tall one gets added.
+- **`hyprctl dispatch` is *also* broken by the Lua config, not just
+  `hyprctl keyword`** (the existing gotcha below only called out `keyword`).
+  Confirmed live: `hyprctl dispatch focuswindow "class:^(kitty)$"` (and
+  variants) errors `')' expected near 'class'` — the CLI wraps whatever you
+  pass as `hl.dispatch(<your args, space-joined, literally>)`, and the real
+  API is the `hl.dsp.*` table used directly inside `hyprland.lua` (e.g.
+  `hl.dsp.focus({ direction = "left" })`), not positional `dispatcher
+  target` pairs. Never found a working CLI incantation for this config —
+  when a script needs to focus/target a specific window from outside
+  `hyprland.lua` itself, get its geometry from `hyprctl clients -j` and act
+  on that directly (e.g. `grim -g "<x>,<y> <w>x<h>"`) rather than trying to
+  dispatch to it.
 
 ## Multi-machine status
 

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Picks whichever sticker in ~/Pictures/Stickers/ has an average color
+# closest to the current matugen primary color, and copies it byte-for-byte
+# (unmodified — no recoloring, no flattening, still named stickers.png
+# regardless of source format) into ~/.config/neofetch/stickers.png — kitty
+# icat detects the real format from content, not the extension, and animates
+# GIF/WebP sources fine as long as nothing along the way flattens them to a
+# single frame (pairs with crop_mode="none" in neofetch's config.conf; see
+# the comment there). Run as matugen's post_hook for the `sticker` template
+# (see config.toml), so it reruns on every wallpaper change and light/dark
+# toggle alongside everything else themed.
+set -euo pipefail
+
+STICKERS_DIR="$HOME/Pictures/Stickers"
+PRIMARY_FILE="$HOME/.local/state/fawdots/primary-color.txt"
+TARGET="$HOME/.config/neofetch/stickers.png"
+
+[ -f "$PRIMARY_FILE" ] || exit 0
+
+shopt -s nullglob nocaseglob
+files=("$STICKERS_DIR"/*.png "$STICKERS_DIR"/*.jpg "$STICKERS_DIR"/*.jpeg
+	"$STICKERS_DIR"/*.webp "$STICKERS_DIR"/*.gif "$STICKERS_DIR"/*.bmp)
+shopt -u nullglob nocaseglob
+
+[ "${#files[@]}" -eq 0 ] && exit 0
+
+primary_hex="$(tr -d '[:space:]#' <"$PRIMARY_FILE")"
+pr=$((16#${primary_hex:0:2}))
+pg=$((16#${primary_hex:2:2}))
+pb=$((16#${primary_hex:4:2}))
+
+best_file=""
+best_dist=""
+for f in "${files[@]}"; do
+	rgb="$(magick "${f}[0]" -resize 1x1 \
+		-format '%[fx:int(255*r)],%[fx:int(255*g)],%[fx:int(255*b)]' info: 2>/dev/null)" || continue
+	IFS=',' read -r r g b <<<"$rgb"
+	dist=$(((r - pr) * (r - pr) + (g - pg) * (g - pg) + (b - pb) * (b - pb)))
+	if [ -z "$best_dist" ] || [ "$dist" -lt "$best_dist" ]; then
+		best_dist="$dist"
+		best_file="$f"
+	fi
+done
+
+if [ -n "$best_file" ]; then
+	cp "$best_file" "$TARGET"
+	# neofetch's thumbnail cache is keyed on this file's *path*, not its
+	# content or mtime (see make_thumbnail() in /usr/bin/neofetch — it only
+	# checks [[ ! -f thumbnail ]]) — without this, neofetch keeps showing
+	# whatever sticker was cached the first time, forever, regardless of
+	# how many times this script overwrites stickers.png.
+	rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}/thumbnails/neofetch"
+fi
