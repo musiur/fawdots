@@ -11,8 +11,8 @@ PACMAN_PKGS=(stow swaybg hypridle hyprlock pipewire-pulse wireplumber grim slurp
 	kitty adwaita-fonts adw-gtk-theme nautilus polkit-kde-agent cliphist swayosd hyprpicker
 	wf-recorder hyprlauncher playerctl brightnessctl xdg-desktop-portal
 	xdg-desktop-portal-hyprland xdg-desktop-portal-gtk python-gobject gtk3 gtk-layer-shell
-	ttf-ubuntu-font-family neofetch imagemagick zsh zsh-autosuggestions zsh-syntax-highlighting)
-AUR_PKGS=(waypaper nwg-launchers oh-my-zsh-git)
+	ttf-ubuntu-font-family imagemagick zsh zsh-autosuggestions zsh-syntax-highlighting)
+AUR_PKGS=(waypaper nwg-launchers oh-my-zsh-git neofetch)
 
 echo "==> Installing pacman packages: ${PACMAN_PKGS[*]}"
 sudo pacman -S --needed "${PACMAN_PKGS[@]}"
