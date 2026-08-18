@@ -3,7 +3,7 @@
 @import url("colors.css");
 
 * {
-	font-family: "Adwaita Sans", "Symbols Nerd Font", sans-serif;
+	font-family: "Ubuntu Nerd Font","JetBrainsMono Nerd Font Bold";
 	font-size: 12px;
 	min-height: 0;
 }
@@ -17,13 +17,13 @@
    box-shadow, transparent areas showed whatever was behind as a
    blurred "ghost" panel. An opaque background gives the blur nothing
    to show through. */
-tooltip {
+/*tooltip {
 	font-family: "Adwaita Mono", monospace;
 	background-color: @background;
 	color: @foreground;
 	box-shadow: none;
 	border: 1px solid alpha(@foreground, 0.1);
-}
+}*/
 
 window#waybar {
 	background-color: alpha(@background, 0.45);
