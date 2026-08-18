@@ -74,7 +74,7 @@ hl.on("hyprland.start", function ()
     hl.exec_cmd("/usr/lib/polkit-kde-authentication-agent-1")
     -- Small delay so pipewire-pulse/wireplumber have finished activating
     -- before waybar's pulseaudio module queries them on a fresh boot.
-    hl.exec_cmd("sleep 2 && waybar")
+    -- hl.exec_cmd("sleep 2 && waybar")
     -- Clipboard history daemon; SUPER+SHIFT+V opens the picker (see keybindings).
     hl.exec_cmd("wl-paste --watch cliphist store")
     -- Shows the volume/brightness OSD popup; triggered via swayosd-client.
@@ -143,20 +143,20 @@ hl.config({
 
         -- Change transparency of focused and unfocused windows
         active_opacity   = 1.0,
-        inactive_opacity = 0.6,
+        inactive_opacity = 0.5,
 
         shadow = {
             enabled      = true,
             range        = 4,
-            render_power = 3,
+            render_power = 4,
             color        = 0xee1a1a1a,
         },
 
         blur = {
             enabled   = true,
-            size      = 6,
+            size      = 8,
             passes    = 2,
-            vibrancy  = 0.1696,
+            vibrancy  = 0.2,
         },
     },
 
