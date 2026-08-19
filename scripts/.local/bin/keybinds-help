@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Scrollable cheat-sheet of every fawdots keybinding, shown as a TUI
+# (less) inside a floating kitty window. Bound to SUPER+/.
+#
+# Content here is hand-maintained, same as README.md's keybind tables —
+# if you add/change a bind in hyprland.lua, update both.
+#
+# Was originally whiptail --textbox, but keypresses (arrows/PgUp/PgDn)
+# didn't register at all on this setup — some newt/kitty keyboard-handling
+# mismatch, not a box-sizing issue (verified: the box rendered and drew
+# fine, input just never scrolled it). less is a plain pager with none of
+# that ncurses-box machinery and scrolls reliably.
+set -euo pipefail
+
+sheet="$(mktemp)"
+trap 'rm -f "$sheet"' EXIT
+
+cat >"$sheet" <<'EOF'
+ APPS
+  SUPER + T              Terminal (kitty)
+  SUPER + B              Brave
+  SUPER + C              VS Code
+  SUPER + D              Discord
+  SUPER + E              File manager (Nautilus)
+  SUPER + A              App grid launcher
+  SUPER + W              Waypaper (pick wallpaper)
+  SUPER + L              Lock screen
+
+ WINDOWS & WORKSPACES
+  SUPER + Q              Close window
+  SUPER + V              Toggle floating
+  SUPER + P              Toggle pseudotile
+  SUPER + J              Toggle split (dwindle)
+  SUPER + arrow          Move focus
+  SUPER + [0-9]          Switch to workspace
+  SUPER + SHIFT + [0-9]  Move window to workspace
+  SUPER + S              Toggle scratchpad
+  SUPER + SHIFT + S      Move window to scratchpad
+  SUPER + scroll         Cycle workspaces
+  SUPER + drag (LMB)     Move window
+  SUPER + drag (RMB)     Resize window
+
+ THEME
+  SUPER + SHIFT + D      Toggle light/dark mode
+
+ SCREENSHOTS
+  Print                  Region screenshot -> annotate in satty
+  SUPER + Print          Window screenshot
+  SUPER + SHIFT + Print  Full monitor screenshot
+
+ CLIPBOARD & UTILITIES
+  SUPER + SHIFT + V      Clipboard history picker
+  SUPER + SHIFT + C      Color picker
+  SUPER + SHIFT + R      Toggle screen recording
+  SUPER + SHIFT + M      Monitor layout tool
+  SUPER + SHIFT + W      Restart waybar
+  SUPER + SHIFT + Escape Force-kill stuck calendar popup
+  SUPER + /              This cheat sheet
+
+ POWER
+  SUPER + M              Shutdown/exit menu
+
+ MEDIA & BRIGHTNESS (laptop keys)
+  Volume raise/lower/mute, mic mute
+  Brightness up/down
+  Play/pause/next/previous track
+
+ (arrows/PgUp/PgDn/Space to scroll, q to quit)
+EOF
+
+less --prompt=" fawdots keybinds — q to quit " "$sheet"

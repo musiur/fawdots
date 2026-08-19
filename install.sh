@@ -53,7 +53,8 @@ PACMAN_PKGS=(stow swaybg hypridle hyprlock pipewire-pulse wireplumber grim slurp
 	kitty adwaita-fonts adw-gtk-theme nautilus polkit-kde-agent cliphist swayosd hyprpicker
 	wf-recorder hyprlauncher playerctl brightnessctl xdg-desktop-portal
 	xdg-desktop-portal-hyprland xdg-desktop-portal-gtk python-gobject gtk3 gtk-layer-shell
-	ttf-ubuntu-font-family ttf-ubuntu-nerd imagemagick zsh zsh-autosuggestions zsh-syntax-highlighting)
+	ttf-ubuntu-font-family ttf-ubuntu-nerd imagemagick zsh zsh-autosuggestions zsh-syntax-highlighting
+	less)
 AUR_PKGS=(waypaper nwg-launchers oh-my-zsh-git neofetch mpvpaper brave-bin visual-studio-code-bin)
 
 step "Installing pacman packages"
@@ -100,7 +101,7 @@ done
 
 chmod +x ~/.local/bin/matugen-apply ~/.local/bin/theme-toggle ~/.local/bin/record-toggle \
 	~/.local/bin/hypr-monitor ~/.local/bin/waybar-clock ~/.local/bin/waybar-calendar \
-	~/.local/bin/nwggrid-launch ~/.local/bin/neofetch-sticker
+	~/.local/bin/nwggrid-launch ~/.local/bin/neofetch-sticker ~/.local/bin/keybinds-help
 
 step "Setting up XDG user directories (~/Pictures, ~/Downloads, etc.)"
 xdg-user-dirs-update

@@ -306,6 +306,7 @@ hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("killall waybar; waybar"))
 -- script's SAFETY note) — force-kills it regardless of internal state,
 -- independent of whatever GTK/layer-shell is doing.
 hl.bind(mainMod .. " + SHIFT + Escape", hl.dsp.exec_cmd("pkill -9 -f waybar-calendar; rm -f ~/.local/state/fawdots/waybar-calendar.pid"))
+hl.bind(mainMod .. " + slash", hl.dsp.exec_cmd("kitty --class fawdots-keybinds --title 'fawdots keybinds' -e ~/.local/bin/keybinds-help"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(menu))
@@ -442,5 +443,14 @@ hl.window_rule({
     match = { class = "hyprland-run" },
 
     move  = "20 monitor_h-120",
+    float = true,
+})
+
+-- Keybinds cheat sheet (SUPER+/) — float instead of tiling into the
+-- current workspace, same reasoning as any other short-lived utility popup.
+hl.window_rule({
+    name  = "float-keybinds-help",
+    match = { class = "^fawdots-keybinds$" },
+
     float = true,
 })
