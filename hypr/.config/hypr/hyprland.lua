@@ -118,7 +118,7 @@ hl.env("HYPRCURSOR_SIZE", "24")
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
     general = {
-        gaps_in  = 5,
+        gaps_in  = 4,
         gaps_out = 8,
 
         border_size = 2,
@@ -148,15 +148,15 @@ hl.config({
         shadow = {
             enabled      = true,
             range        = 4,
-            render_power = 3,
+            render_power = 4,
             color        = 0xee1a1a1a,
         },
 
         blur = {
             enabled   = true,
-            size      = 6,
+            size      = 8,
             passes    = 2,
-            vibrancy  = 0.1696,
+            vibrancy  = 0.2,
         },
     },
 
@@ -290,6 +290,7 @@ local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("brave"))
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("code"))
+hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("discord"))
 local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
@@ -305,6 +306,7 @@ hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("killall waybar; waybar"))
 -- script's SAFETY note) — force-kills it regardless of internal state,
 -- independent of whatever GTK/layer-shell is doing.
 hl.bind(mainMod .. " + SHIFT + Escape", hl.dsp.exec_cmd("pkill -9 -f waybar-calendar; rm -f ~/.local/state/fawdots/waybar-calendar.pid"))
+hl.bind(mainMod .. " + slash", hl.dsp.exec_cmd("kitty --class fawdots-keybinds --title 'fawdots keybinds' -e ~/.local/bin/keybinds-help"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(menu))
@@ -441,5 +443,14 @@ hl.window_rule({
     match = { class = "hyprland-run" },
 
     move  = "20 monitor_h-120",
+    float = true,
+})
+
+-- Keybinds cheat sheet (SUPER+/) — float instead of tiling into the
+-- current workspace, same reasoning as any other short-lived utility popup.
+hl.window_rule({
+    name  = "float-keybinds-help",
+    match = { class = "^fawdots-keybinds$" },
+
     float = true,
 })

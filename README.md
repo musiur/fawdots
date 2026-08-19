@@ -176,6 +176,7 @@ via satty's toolbar/keybinds (see `satty --man` for the full list).
 | `SUPER+SHIFT+V` | Clipboard history picker |
 | `SUPER+SHIFT+C` | Pick a color from screen, copies hex to clipboard, sends a notification |
 | `SUPER+SHIFT+R` | Toggle screen recording, saves to `~/Videos/recording-<timestamp>.mp4` |
+| `SUPER+/` | Keybinds cheat sheet (scrollable TUI, `less`) |
 
 - **Clipboard history**: `wl-paste --watch cliphist store` runs in autostart,
   building a history. `SUPER+SHIFT+V` runs
