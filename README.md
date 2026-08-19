@@ -1,4 +1,7 @@
+
 # fawdots
+
+<img src="fawdots.png" alt="FAWDOTS image">
 
 Personal dotfiles, managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
